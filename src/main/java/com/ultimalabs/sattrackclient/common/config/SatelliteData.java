@@ -29,6 +29,11 @@ public class SatelliteData {
     private final String name;
 
     /**
+     * Satellite transponder's radio frequency
+     */
+    private final double radioFrequency;
+
+    /**
      * Elevation threshold for passes
      */
     @Min(value = 0, message = "Elevation should not be less than 0")
@@ -47,5 +52,17 @@ public class SatelliteData {
      */
     @NotNull(message = "Please specify useRotator as a boolean value")
     private final boolean rotatorEnabled;
+
+    /**
+     * Shell command executed at satellite rise time
+     */
+    @NotNull(message = "Satellite rise shell command must be specified (it can be an empty string)")
+    private final String satRiseShellCmd;
+
+    /**
+     * Shell command executed at satellite set time
+     */
+    @NotNull(message = "Satellite set shell command must be specified (it can be an empty string)")
+    private final String satSetShellCmd;
 
 }
