@@ -65,7 +65,7 @@ public class PredictClientService {
     }
 
     /**
-     * Builds an URL for calling SatTrackAPI service
+     * Builds an URL for calling the SatTrackAPI service
      *
      * @param sat     satellite data
      * @param station station details
@@ -101,6 +101,9 @@ public class PredictClientService {
         valuesMap.put("satId", pass.getSatelliteData().getId());
         valuesMap.put("satName", pass.getSatelliteData().getName());
         valuesMap.put("radioFrequency", Double.toString(pass.getSatelliteData().getRadioFrequency()));
+        valuesMap.put("predictTime", Long.toString(pass.getNow().getTime()));
+        valuesMap.put("rise", Long.toString(pass.getRise().getTime()));
+        valuesMap.put("set", Long.toString(pass.getSet().getTime()));
         valuesMap.put("duration", Double.toString(pass.getDuration()));
 
         String riseTemplateString = pass.getSatelliteData().getSatRiseShellCmdTemplate();

@@ -3,6 +3,7 @@ package com.ultimalabs.sattrackclient.scheduler.service;
 import com.ultimalabs.sattrackclient.common.config.SatTrackClientConfig;
 import com.ultimalabs.sattrackclient.common.model.PassEventData;
 import com.ultimalabs.sattrackclient.predictclient.service.PredictClientService;
+import com.ultimalabs.sattrackclient.shellexec.service.ShellExecService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
@@ -30,6 +31,11 @@ class SchedulerService {
     private final PredictClientService predictClientService;
 
     /**
+     * Shell exec service
+     */
+    private final ShellExecService shellExecService;
+
+    /**
      * Reference to a task scheduler
      */
     private final ThreadPoolTaskScheduler taskScheduler;
@@ -38,7 +44,7 @@ class SchedulerService {
      * Schedules tracking of the next pass
      */
     @PostConstruct
-    private void scheduleNextEvent() { // NOSONAR
+    private void scheduleNextEvent() {
 
         PassEventData nextPass = predictClientService.getNextPass();
 
@@ -62,11 +68,11 @@ class SchedulerService {
         Date trackerDate = passData.getRise();
         Date fetcherDate = passData.getSet();
 
-        taskScheduler.schedule(new TrackerTask(passData, this), trackerDate);
-        log.info("Scheduled tracker for " + passData.getSatelliteData().getName() + " from " + passData.getRise() + " to " + passData.getSet());
+        taskScheduler.schedule(new TrackerTask(passData, this, shellExecService), trackerDate);
+        log.info("Scheduled tracker: " + passData.getSatelliteData().getName() + ", " + passData.getRise() + " - " + passData.getSet());
 
-        taskScheduler.schedule(new FetcherTask(passData,this), fetcherDate);
-        log.info("Scheduled fetcher at " + fetcherDate);
+        taskScheduler.schedule(new FetcherTask(passData,this, shellExecService), fetcherDate);
+        log.info("Scheduled fetcher: " + fetcherDate);
 
     }
 
@@ -79,6 +85,7 @@ class SchedulerService {
 
         private final PassEventData passData;
         private final SchedulerService schedulerService;
+        private final ShellExecService shellExecService;
 
         @Override
         public void run() {
@@ -88,7 +95,8 @@ class SchedulerService {
             String riseShellCmdSubstituted = passData.getSatelliteData().getSatRiseShellCmdSubstituted();
 
             if (!riseShellCmdSubstituted.equals("")) {
-                log.info("Would execute rise-time shell command: " + riseShellCmdSubstituted);
+                log.info("Executing rise-time shell command: " + riseShellCmdSubstituted);
+                shellExecService.execShellCmd(riseShellCmdSubstituted);
             }
 
         }
@@ -103,15 +111,18 @@ class SchedulerService {
 
         private final PassEventData passData;
         private final SchedulerService schedulerService;
+        private final ShellExecService shellExecService;
 
         @Override
         public void run() {
+
             log.info("Started FetcherTask on thread " + Thread.currentThread().getName());
 
             String setShellCmdSubstituted = passData.getSatelliteData().getSatSetShellCmdSubstituted();
 
             if (!setShellCmdSubstituted.equals("")) {
-                log.info("Would execute set-time shell command: " + setShellCmdSubstituted);
+                log.info("Executing set-time shell command: " + setShellCmdSubstituted);
+                shellExecService.execShellCmd(setShellCmdSubstituted);
             }
 
             schedulerService.scheduleNextEvent();
