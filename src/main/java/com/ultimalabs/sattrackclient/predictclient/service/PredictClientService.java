@@ -101,9 +101,9 @@ public class PredictClientService {
         valuesMap.put("satId", pass.getSatelliteData().getId());
         valuesMap.put("satName", pass.getSatelliteData().getName());
         valuesMap.put("radioFrequency", Double.toString(pass.getSatelliteData().getRadioFrequency()));
-        valuesMap.put("predictTime", Long.toString(pass.getNow().getTime()));
-        valuesMap.put("rise", Long.toString(pass.getRise().getTime()));
-        valuesMap.put("set", Long.toString(pass.getSet().getTime()));
+        valuesMap.put("predictTime", Long.toString(pass.getNow().getTime() / 1000));
+        valuesMap.put("rise", Long.toString(pass.getRise().getTime() / 1000));
+        valuesMap.put("set", Long.toString(pass.getSet().getTime() / 1000));
         valuesMap.put("duration", Double.toString(pass.getDuration()));
 
         String riseTemplateString = pass.getSatelliteData().getSatRiseShellCmdTemplate();

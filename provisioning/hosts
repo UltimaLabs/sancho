@@ -1,0 +1,3 @@
+[production]
+rpisdr ansible_ssh_host=localhost ansible_ssh_port=2015 ansible_ssh_user=ultima
+
