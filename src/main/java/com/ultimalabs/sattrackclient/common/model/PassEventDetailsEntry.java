@@ -1,8 +1,9 @@
-package com.ultimalabs.sattrackclient.scheduler.model;
+package com.ultimalabs.sattrackclient.common.model;
 
 import lombok.Data;
 
 import java.io.Serializable;
+import java.util.Date;
 
 /**
  * Satellite pass details
@@ -13,7 +14,7 @@ class PassEventDetailsEntry implements Serializable {
     /**
      * Date and time for this data item
      */
-    private String t;
+    private Date t;
 
     /**
      * Azimuth

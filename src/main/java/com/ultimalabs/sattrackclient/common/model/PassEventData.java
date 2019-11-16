@@ -1,4 +1,4 @@
-package com.ultimalabs.sattrackclient.scheduler.model;
+package com.ultimalabs.sattrackclient.common.model;
 
 import com.ultimalabs.sattrackclient.common.config.SatelliteData;
 import lombok.Data;
@@ -25,7 +25,7 @@ public class PassEventData implements Serializable, Comparable<PassEventData> {
     /**
      * Current date and time
      */
-    private String now;
+    private Date now;
 
     /**
      * Wait time for the rise event (rise - now), in seconds

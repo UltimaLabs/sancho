@@ -22,21 +22,21 @@ sattrackclient:
       minElevation: 25.0
       stepSize: 0
       rotatorEnabled: false
-      satRiseShellCmd: ""
-      satSetShellCmd: ""
+      satRiseShellCmdTemplate: "/opt/ultima/noaa/capture.sh ${satId} ${satName} ${radioFrequency} ${duration}"
+      satSetShellCmdTemplate: ""
     - id: 28654
       name: "NOAA18"
       radioFrequency: 137.19125
       minElevation: 25.0
       stepSize: 0
       rotatorEnabled: false
-      satRiseShellCmd: ""
-      satSetShellCmd: ""
+      satRiseShellCmdTemplate: "/opt/ultima/noaa/capture.sh ${satId} ${satName} ${radioFrequency} ${duration}"
+      satSetShellCmdTemplate: ""
     - id: 33591
       name: "NOAA19"
       radioFrequency: 137.1
       minElevation: 25.0
       stepSize: 0
       rotatorEnabled: false
-      satRiseShellCmd: ""
-      satSetShellCmd: ""
+      satRiseShellCmdTemplate: "/opt/ultima/noaa/capture.sh ${satId} ${satName} ${radioFrequency} ${duration}"
+      satSetShellCmdTemplate: ""

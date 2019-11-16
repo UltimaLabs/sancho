@@ -54,15 +54,25 @@ public class SatelliteData {
     private final boolean rotatorEnabled;
 
     /**
-     * Shell command executed at satellite rise time
+     * Template for the shell command executed at satellite rise time
      */
-    @NotNull(message = "Satellite rise shell command must be specified (it can be an empty string)")
-    private final String satRiseShellCmd;
+    @NotNull(message = "Satellite rise shell command template must be specified (it can be an empty string)")
+    private final String satRiseShellCmdTemplate;
 
     /**
-     * Shell command executed at satellite set time
+     * Template for the shell command executed at satellite set time
      */
-    @NotNull(message = "Satellite set shell command must be specified (it can be an empty string)")
-    private final String satSetShellCmd;
+    @NotNull(message = "Satellite set shell command template must be specified (it can be an empty string)")
+    private final String satSetShellCmdTemplate;
+
+    /**
+     * Substituted shell command executed at satellite rise time
+     */
+    private String satRiseShellCmdSubstituted;
+
+    /**
+     * Substituted shell command executed at satellite set time
+     */
+    private String satSetShellCmdSubstituted;
 
 }

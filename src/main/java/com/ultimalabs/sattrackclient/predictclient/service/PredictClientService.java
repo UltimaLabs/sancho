@@ -1,29 +1,25 @@
-package com.ultimalabs.sattrackclient.scheduler;
+package com.ultimalabs.sattrackclient.predictclient.service;
 
 import com.ultimalabs.sattrackclient.common.config.SatTrackClientConfig;
 import com.ultimalabs.sattrackclient.common.config.SatelliteData;
 import com.ultimalabs.sattrackclient.common.config.StationDetails;
-import com.ultimalabs.sattrackclient.scheduler.model.PassEventData;
+import com.ultimalabs.sattrackclient.common.model.PassEventData;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.text.StringSubstitutor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
-import javax.annotation.PostConstruct;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 /**
- * Scheduler service
- * <p>
- * Fetches next pass data and schedules tracking
+ * Fetches tracking data from the remote SatTrackAPI server
  */
 @Slf4j
 @RequiredArgsConstructor
 @Service
-public class SchedulerService {
+public class PredictClientService {
 
     /**
      * Config object
@@ -31,25 +27,11 @@ public class SchedulerService {
     private final SatTrackClientConfig config;
 
     /**
-     * Initial scheduling, executes when the app is run
-     */
-    @PostConstruct
-    private void initScheduling() {
-
-        PassEventData nextPass = getNextPass();
-
-        if (nextPass != null) {
-            log.info("Fetched next pass (startup): " + nextPass.toString());
-        }
-
-    }
-
-    /**
      * Fetches the next pass data
      *
      * @return pass data
      */
-    private PassEventData getNextPass() {
+    public PassEventData getNextPass() {
 
         List<PassEventData> passDataList = new ArrayList<>();
         RestTemplate restTemplate = new RestTemplate();
@@ -61,6 +43,7 @@ public class SchedulerService {
                 pass = restTemplate.getForObject(url, PassEventData.class);
                 if (pass != null) {
                     pass.setSatelliteData(sat);
+                    substituteShellVariables(pass);
                     passDataList.add(pass);
                 }
             } catch (RestClientException e) {
@@ -82,7 +65,7 @@ public class SchedulerService {
     }
 
     /**
-     * Builds a SatTrackAPI service call URL
+     * Builds an URL for calling SatTrackAPI service
      *
      * @param sat     satellite data
      * @param station station details
@@ -107,5 +90,31 @@ public class SchedulerService {
 
     }
 
+    /**
+     * Substitutes rise/set shell cmd templates with pass/satellite data
+     * @param pass pass data
+     */
+    private void substituteShellVariables(PassEventData pass) {
+
+        Map<String, String> valuesMap = new HashMap<>();
+
+        valuesMap.put("satId", pass.getSatelliteData().getId());
+        valuesMap.put("satName", pass.getSatelliteData().getName());
+        valuesMap.put("radioFrequency", Double.toString(pass.getSatelliteData().getRadioFrequency()));
+        valuesMap.put("duration", Double.toString(pass.getDuration()));
+
+        String riseTemplateString = pass.getSatelliteData().getSatRiseShellCmdTemplate();
+        String setTemplateString = pass.getSatelliteData().getSatSetShellCmdTemplate();
+
+        StringSubstitutor subRise = new StringSubstitutor(valuesMap);
+        StringSubstitutor subSet = new StringSubstitutor(valuesMap);
+
+        String resolvedRiseString = subRise.replace(riseTemplateString);
+        String resolvedSetString = subSet.replace(setTemplateString);
+
+        pass.getSatelliteData().setSatRiseShellCmdSubstituted(resolvedRiseString);
+        pass.getSatelliteData().setSatSetShellCmdSubstituted(resolvedSetString);
+
+    }
 
 }
