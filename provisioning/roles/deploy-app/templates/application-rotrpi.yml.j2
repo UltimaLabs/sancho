@@ -1,0 +1,51 @@
+spring:
+  main:
+    webApplicationType: NONE
+
+sattrackclient:
+
+  # SatTrackAPI base URL
+  satTrackApiUrl: https://sattrackapi.ultima.hr:8443/api/v1
+
+  # station details
+  station:
+    name: "Pregrada/Ultima"
+    latitude: 46.1613
+    longitude: 15.7534
+    altitude: 200
+
+  # satellites we're tracking
+
+  # You can use the following placeholders in shell cmd templates:
+  # ${satId} - string
+  # ${satName} - string
+  # ${radioFrequency} - double [MHz]
+  # ${predictTime} - Unix epoch
+  # ${rise} - Unix epoch
+  # ${set} - Unix epoch
+  # ${duration} - double [sec]
+  satelliteData:
+    - id: 25338
+      name: "NOAA15"
+      radioFrequency: 137.5
+      minElevation: 10.0
+      stepSize: 0.1
+      rotatorEnabled: true
+      satRiseShellCmdTemplate: ""
+      satSetShellCmdTemplate: ""
+    - id: 28654
+      name: "NOAA18"
+      radioFrequency: 137.19125
+      minElevation: 10.0
+      stepSize: 0.1
+      rotatorEnabled: true
+      satRiseShellCmdTemplate: ""
+      satSetShellCmdTemplate: ""
+    - id: 33591
+      name: "NOAA19"
+      radioFrequency: 137.1
+      minElevation: 10.0
+      stepSize: 0.1
+      rotatorEnabled: true
+      satRiseShellCmdTemplate: ""
+      satSetShellCmdTemplate: ""

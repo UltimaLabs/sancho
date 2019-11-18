@@ -95,7 +95,6 @@ class SchedulerService {
             String riseShellCmdSubstituted = passData.getSatelliteData().getSatRiseShellCmdSubstituted();
 
             if (!riseShellCmdSubstituted.equals("")) {
-                log.info("Executing rise-time shell command: " + riseShellCmdSubstituted);
                 shellExecService.execShellCmd(riseShellCmdSubstituted);
             }
 
@@ -121,7 +120,6 @@ class SchedulerService {
             String setShellCmdSubstituted = passData.getSatelliteData().getSatSetShellCmdSubstituted();
 
             if (!setShellCmdSubstituted.equals("")) {
-                log.info("Executing set-time shell command: " + setShellCmdSubstituted);
                 shellExecService.execShellCmd(setShellCmdSubstituted);
             }
 

@@ -1,0 +1,21 @@
+---
+app_basedir: /opt/ultima/sattrackclient
+app_files_owner: ultima
+app_files_group: ultima
+
+num_old_jars_to_keep: 5
+
+app_current_jar_symlink: sattrackclient-current.jar
+app_properties_src: application-rpisdr.yml.j2
+
+systemd_unit_description: SatTrackClient
+systemd_unit_after: network.target
+
+systemd_service_type: simple
+systemd_service_user: ultima
+systemd_service_group: ultima
+systemd_service_exec_start: /usr/bin/java -Xms32m -Xmx64m -jar /opt/ultima/sattrackclient/sattrackclient-current.jar
+systemd_service_restart: always
+
+systemd_install_wanted_by: multi-user.target
+

@@ -1,0 +1,13 @@
+#!/usr/bin/env ansible-playbook
+---
+- name: SatTrackClient - deploy as a service
+  hosts: rpisdr
+  become: True
+  become_user: root
+  become_method: sudo
+
+  vars_files:
+    - vars/rpisdr.yml
+
+  roles:
+    - { role: deploy-app }

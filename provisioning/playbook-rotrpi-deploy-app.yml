@@ -1,13 +1,13 @@
 #!/usr/bin/env ansible-playbook
 ---
-- name: SatTrackClient - production deploy
-  hosts: production
+- name: SatTrackClient - deploy as a service
+  hosts: rotrpi
   become: True
   become_user: root
   become_method: sudo
 
   vars_files:
-    - vars/production.yml
+    - vars/rotrpi.yml
 
   roles:
     - { role: deploy-app }
