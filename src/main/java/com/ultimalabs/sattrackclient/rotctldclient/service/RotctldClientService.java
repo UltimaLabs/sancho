@@ -60,7 +60,7 @@ public class RotctldClientService {
             String returnMessage = sendMessage(",\\set_pos " + azEl.getAzimuth() + " " + azEl.getElevation());
 
             if (isInvalidResponse(returnMessage)) {
-                log.error("Rotctld failed executing setAzEl() command. Response: " + returnMessage);
+                log.error("Rotctld failed executing setAzEl() command. Response: {}", returnMessage);
                 return false;
             }
 
@@ -89,7 +89,7 @@ public class RotctldClientService {
         stopConnection();
 
         if (isInvalidResponse(returnMessage)) {
-            log.error("Rotctld failed executing getAzEl() command.");
+            log.error("Rotctld failed executing getAzEl() command. Response: {}", returnMessage);
             return null;
         }
 

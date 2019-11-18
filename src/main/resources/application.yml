@@ -32,7 +32,7 @@ sattrackclient:
   satelliteData:
     - id: 25338
       name: "NOAA15"
-      radioFrequency: 137.5
+      radioFrequency: 137.62
       minElevation: 25.0
       stepSize: 0.25
       rotatorEnabled: true
@@ -40,7 +40,7 @@ sattrackclient:
       satSetShellCmdTemplate: ""
     - id: 28654
       name: "NOAA18"
-      radioFrequency: 137.19125
+      radioFrequency: 137.9125
       minElevation: 25.0
       stepSize: 0.25
       rotatorEnabled: true
