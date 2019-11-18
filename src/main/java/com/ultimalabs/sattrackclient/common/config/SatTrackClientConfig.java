@@ -1,5 +1,6 @@
 package com.ultimalabs.sattrackclient.common.config;
 
+import com.ultimalabs.sattrackclient.common.model.RotatorConfig;
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.ConstructorBinding;
@@ -29,6 +30,12 @@ public class SatTrackClientConfig {
      */
     @NotNull(message = "Station details should not be empty")
     private final StationDetails station;
+
+    /**
+     * Rotator config
+     */
+    @NotNull(message = "Rotator config should not be empty")
+    private final RotatorConfig rotatorConfig;
 
     /**
      * List of satellites we're tracking

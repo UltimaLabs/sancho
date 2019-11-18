@@ -14,6 +14,11 @@ sattrackclient:
     longitude: 15.7484
     altitude: 380
 
+  rotatorConfig:
+    rotctldHost: 127.0.0.1
+    rotctldPort: 14533
+    waitAfterParkingCommand: 120 # seconds
+
   # satellites we're tracking
 
   # You can use the following placeholders in shell cmd templates:
@@ -29,23 +34,23 @@ sattrackclient:
       name: "NOAA15"
       radioFrequency: 137.5
       minElevation: 25.0
-      stepSize: 0
-      rotatorEnabled: false
-      satRiseShellCmdTemplate: "/opt/ultima/apt-receive/capture.sh ${satId} ${satName} ${radioFrequency} ${predictTime} ${rise} ${set} ${duration}"
+      stepSize: 0.25
+      rotatorEnabled: true
+      satRiseShellCmdTemplate: ""
       satSetShellCmdTemplate: ""
     - id: 28654
       name: "NOAA18"
       radioFrequency: 137.19125
       minElevation: 25.0
-      stepSize: 0
-      rotatorEnabled: false
-      satRiseShellCmdTemplate: "/opt/ultima/apt-receive/capture.sh ${satId} ${satName} ${radioFrequency} ${predictTime} ${rise} ${set} ${duration}"
+      stepSize: 0.25
+      rotatorEnabled: true
+      satRiseShellCmdTemplate: ""
       satSetShellCmdTemplate: ""
     - id: 33591
       name: "NOAA19"
       radioFrequency: 137.1
       minElevation: 25.0
-      stepSize: 0
-      rotatorEnabled: false
-      satRiseShellCmdTemplate: "/opt/ultima/apt-receive/capture.sh ${satId} ${satName} ${radioFrequency} ${predictTime} ${rise} ${set} ${duration}"
+      stepSize: 0.25
+      rotatorEnabled: true
+      satRiseShellCmdTemplate: ""
       satSetShellCmdTemplate: ""

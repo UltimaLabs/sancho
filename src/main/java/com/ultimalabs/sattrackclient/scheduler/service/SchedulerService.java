@@ -3,6 +3,7 @@ package com.ultimalabs.sattrackclient.scheduler.service;
 import com.ultimalabs.sattrackclient.common.config.SatTrackClientConfig;
 import com.ultimalabs.sattrackclient.common.model.PassEventData;
 import com.ultimalabs.sattrackclient.predictclient.service.PredictClientService;
+import com.ultimalabs.sattrackclient.rotctldclient.service.RotctldClientService;
 import com.ultimalabs.sattrackclient.shellexec.service.ShellExecService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -36,6 +37,11 @@ class SchedulerService {
     private final ShellExecService shellExecService;
 
     /**
+     * Rotctld client service
+     */
+    private final RotctldClientService rotctldClientService;
+
+    /**
      * Reference to a task scheduler
      */
     private final ThreadPoolTaskScheduler taskScheduler;
@@ -49,7 +55,7 @@ class SchedulerService {
         PassEventData nextPass = predictClientService.getNextPass();
 
         if (nextPass != null) {
-            log.info("Fetched next pass: " + nextPass.toString());
+            log.info("Fetched next pass.");
             scheduleTracking(nextPass);
         }
 
