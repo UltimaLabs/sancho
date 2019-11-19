@@ -1,6 +1,5 @@
 package com.ultimalabs.sattrackclient.common.config;
 
-import com.ultimalabs.sattrackclient.common.model.RotatorConfig;
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.ConstructorBinding;

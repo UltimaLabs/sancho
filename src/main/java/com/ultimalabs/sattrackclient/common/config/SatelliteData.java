@@ -41,7 +41,7 @@ public class SatelliteData {
     private final double minElevation;
 
     /**
-     * Tracking step size (duration), for use with rotators
+     * Tracking step size (duration n seconds), for use with rotators
      * <p>
      * Use zero to fetch only the basic pass data, without azimuth/elevation details.
      */

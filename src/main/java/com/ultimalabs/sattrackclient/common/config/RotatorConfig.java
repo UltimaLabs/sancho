@@ -1,4 +1,4 @@
-package com.ultimalabs.sattrackclient.common.model;
+package com.ultimalabs.sattrackclient.common.config;
 
 import lombok.Data;
 

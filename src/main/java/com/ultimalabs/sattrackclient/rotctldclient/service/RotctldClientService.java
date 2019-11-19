@@ -15,7 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Client service for clientd
+ * Client service for rotctld
  */
 @Slf4j
 @RequiredArgsConstructor
@@ -31,7 +31,7 @@ public class RotctldClientService {
     /**
      * Parks the rotator
      *
-     * @param position parking azimuth/elevation
+     * @param position parking azimuth/elevation position
      * @return true if successful
      */
     public boolean parkRotator(AzimuthElevation position) {
@@ -40,22 +40,37 @@ public class RotctldClientService {
         positions.add(position);
         int sleepDuration = config.getRotatorConfig().getWaitAfterParkingCommand() * 1000;
 
-        return setAzEl(positions, sleepDuration);
+        boolean parkingStatus = track(positions, sleepDuration);
+
+        if (parkingStatus) {
+            log.info("Parked the rotator: {}", position);
+        } else {
+            log.info("Error parking the rotator.");
+        }
+
+        return parkingStatus;
 
     }
 
     /**
+     * Tracks the satellite
      *
+     * Sends a sequence of "set position" commands to the rotctld, with a
+     * short pause (sleepDuration) between them.
      *
-     * @param azimuthElevation list of azimuth/elevation positions
+     * Please note that the azimuth/elevation data needs to be converted from
+     * the predict app output, smoothing out the azimuth jump when
+     * the satellite passes 0 - 180 degrees line.
+     *
+     * @param azimuthElevationList list of azimuth/elevation positions
      * @param sleepDuration sleep (in ms) between positioning commands
      * @return true if the operation was successful
      */
-    public boolean setAzEl(List<AzimuthElevation> azimuthElevation, int sleepDuration) {
+    public boolean track(List<AzimuthElevation> azimuthElevationList, int sleepDuration) {
 
         startConnection();
 
-        for (AzimuthElevation azEl : azimuthElevation) {
+        for (AzimuthElevation azEl : azimuthElevationList) {
 
             String returnMessage = sendMessage(",\\set_pos " + azEl.getAzimuth() + " " + azEl.getElevation());
 
@@ -93,10 +108,6 @@ public class RotctldClientService {
             return null;
         }
 
-        if (returnMessage == null) {
-            return null;
-        }
-
         String[] parts = returnMessage.split(",");
 
         return new AzimuthElevation(Double.parseDouble(parts[1].replace("Azimuth: ", "")),
@@ -112,31 +123,31 @@ public class RotctldClientService {
      */
     private boolean isInvalidResponse(String message) {
         if (message == null) {
-            return false;
+            return true;
         }
-        return message.contains("RPRT 0");
+        return !message.contains("RPRT 0");
     }
 
     /**
-     * Open a connection to collectd
+     * Open a connection to rotctld
      */
     private void startConnection() {
         try {
             clientSocket = new Socket(config.getRotatorConfig().getRotctldHost(), config.getRotatorConfig().getRotctldPort());
         } catch (IOException e) {
-            log.error("Error connecting to collectd host: {}", e.getMessage());
+            log.error("Error connecting to rotctld host: {}", e.getMessage());
             return;
         }
         try {
             out = new PrintWriter(clientSocket.getOutputStream(), true);
         } catch (IOException e) {
-            log.error("Error getting output stream for collectd host: {}", e.getMessage());
+            log.error("Error getting output stream for rotctld host: {}", e.getMessage());
             return;
         }
         try {
             in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
         } catch (IOException e) {
-            log.error("Error getting input stream for collectd host: {}", e.getMessage());
+            log.error("Error getting input stream for rotctld host: {}", e.getMessage());
         }
     }
 
@@ -144,7 +155,7 @@ public class RotctldClientService {
      * Send a message over the socket
      *
      * @param msg message to be sent
-     * @return return message from collectd
+     * @return return message from rotctld
      */
     private String sendMessage(String msg) {
 
@@ -157,7 +168,7 @@ public class RotctldClientService {
         try {
             resp = in.readLine();
         } catch (IOException e) {
-            log.error("Error reading response from collectd host: {}", e.getMessage());
+            log.error("Error reading response from rotctld host: {}", e.getMessage());
         }
         return resp;
     }
