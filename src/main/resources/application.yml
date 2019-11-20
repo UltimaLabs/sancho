@@ -17,7 +17,8 @@ sattrackclient:
   rotatorConfig:
     rotctldHost: 127.0.0.1
     rotctldPort: 14533
-    waitAfterParkingCommand: 60 # seconds
+    waitAfterParkingCommand: 30 # seconds
+    stepSize: 0.25 # seconds
 
   # satellites we're tracking
 
@@ -34,7 +35,7 @@ sattrackclient:
       name: "NOAA15"
       radioFrequency: 137.62
       minElevation: 30.0
-      stepSize: 0.25
+      stepSize: 1
       rotatorEnabled: true
       satRiseShellCmdTemplate: ""
       satSetShellCmdTemplate: ""
@@ -42,7 +43,7 @@ sattrackclient:
       name: "NOAA18"
       radioFrequency: 137.9125
       minElevation: 30.0
-      stepSize: 0.25
+      stepSize: 1
       rotatorEnabled: true
       satRiseShellCmdTemplate: ""
       satSetShellCmdTemplate: ""
@@ -50,7 +51,7 @@ sattrackclient:
       name: "NOAA19"
       radioFrequency: 137.1
       minElevation: 30.0
-      stepSize: 0.25
+      stepSize: 1
       rotatorEnabled: true
       satRiseShellCmdTemplate: ""
       satSetShellCmdTemplate: ""

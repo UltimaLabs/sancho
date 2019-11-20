@@ -1,11 +1,10 @@
 package com.ultimalabs.sattrackclient.scheduler.service;
 
-import com.ultimalabs.sattrackclient.common.config.SatTrackClientConfig;
 import com.ultimalabs.sattrackclient.common.model.PassEventData;
 import com.ultimalabs.sattrackclient.predictclient.service.PredictClientService;
-import com.ultimalabs.sattrackclient.rotctldclient.model.AzimuthElevation;
+import com.ultimalabs.sattrackclient.rotctldclient.model.TrackingData;
 import com.ultimalabs.sattrackclient.rotctldclient.service.RotctldClientService;
-import com.ultimalabs.sattrackclient.rotctldclient.util.PassDataToAzElConverter;
+import com.ultimalabs.sattrackclient.rotctldclient.util.PassDataToTrackingDataConverter;
 import com.ultimalabs.sattrackclient.shellexec.service.ShellExecService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -14,7 +13,6 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 import java.util.Date;
-import java.util.List;
 
 /**
  * Fetches next pass data and schedules its tracking
@@ -23,11 +21,6 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 class SchedulerService {
-
-    /**
-     * Config object
-     */
-    private final SatTrackClientConfig config;
 
     /**
      * Predict client service
@@ -55,11 +48,16 @@ class SchedulerService {
     @PostConstruct
     private void scheduleNextEvent() {
 
+        boolean scheduleOk = false;
         PassEventData nextPass = predictClientService.getNextPass();
 
         if (nextPass != null) {
-            log.info("Fetched next pass.");
-            scheduleTracking(nextPass);
+            log.info("Fetched next pass - {}.", nextPass.getSatelliteData().getName());
+            scheduleOk = scheduleTracking(nextPass);
+        }
+
+        if (!scheduleOk) {
+            // TODO schedule next fetch
         }
 
     }
@@ -71,66 +69,74 @@ class SchedulerService {
      * At that event's set time next pass data is fetched.
      *
      * @param passData pass data
+     * @return true if tracking was scheduled successfully
      */
-    private void scheduleTracking(PassEventData passData) {
+    private boolean scheduleTracking(PassEventData passData) {
 
         Date trackerDate = passData.getRise();
         Date fetcherDate = passData.getSet();
         boolean rotatorEnabled = passData.getSatelliteData().isRotatorEnabled();
         double stepSize = passData.getSatelliteData().getStepSize();
         String riseShellCmdSubstituted = passData.getSatelliteData().getSatRiseShellCmdSubstituted();
+        String setShellCmdSubstituted = passData.getSatelliteData().getSatSetShellCmdSubstituted();
 
         // schedule tracking
         if (rotatorEnabled && stepSize != 0.0) {
 
-            // convert the azimuth/elevation list
-            List<AzimuthElevation> azimuthElevationList = PassDataToAzElConverter.convert(passData.getEventDetails());
+            // convert the pass data into tracking format
+            TrackingData trackingData = PassDataToTrackingDataConverter.convert(passData);
 
             // park the rotator in the starting position
-            boolean parkOk = rotctldClientService.parkRotator(azimuthElevationList.get(0));
+            boolean parkOk = rotctldClientService.parkRotator(trackingData.getRiseAzimuthElevation());
 
-            if (!parkOk) {
+            if (parkOk) {
+                // schedule tracker task
+                taskScheduler.schedule(new TrackerTask(rotctldClientService, trackingData), trackerDate);
+                log.info("Scheduled tracking: {}, {} - {}",
+                        passData.getSatelliteData().getName(), trackerDate, passData.getSet());
+            } else {
                 log.error("Tracking canceled due to parking error.");
-                return;
+                return false;
             }
-
-            // schedule the tracking
-            int stepSizeInt = (int) Math.round(passData.getSatelliteData().getStepSize() * 1000);
-            taskScheduler.schedule(new TrackerTask(rotctldClientService, azimuthElevationList, stepSizeInt),
-                    trackerDate);
-
-            log.info("Scheduled tracker: {}, {} - {}",
-                    passData.getSatelliteData().getName(), trackerDate, passData.getSet());
         }
 
         // schedule rise-time shell cmd execution
         if (!riseShellCmdSubstituted.equals("")) {
-            taskScheduler.schedule(new RiseShellCmdTask(riseShellCmdSubstituted, shellExecService), trackerDate);
+            taskScheduler.schedule(new ShellCmdTask(riseShellCmdSubstituted, shellExecService), trackerDate);
+            log.info("Scheduled rise-time cmd exec: {} at {}", riseShellCmdSubstituted, trackerDate);
         }
 
-        // schedule fetching of the next pass data and (possibly) execute set-time shell cmd
-        taskScheduler.schedule(new FetcherTask(passData, this, shellExecService), fetcherDate);
+        // schedule set-time shell cmd execution
+        if (!setShellCmdSubstituted.equals("")) {
+            taskScheduler.schedule(new ShellCmdTask(setShellCmdSubstituted, shellExecService), fetcherDate);
+            log.info("Scheduled set-time cmd exec: {} at {}", setShellCmdSubstituted, fetcherDate);
+        }
+
+        // schedule fetching of the next pass data
+        taskScheduler.schedule(new FetcherTask(this), fetcherDate);
         log.info("Scheduled fetcher: {}", fetcherDate);
+
+        return true;
 
     }
 
     /**
-     * Rise shell cmd execution
+     * Shell command execution
      */
     @Slf4j
     @RequiredArgsConstructor
-    static class RiseShellCmdTask implements Runnable {
+    static class ShellCmdTask implements Runnable {
 
-        private final String riseShellCmdSubstituted;
+        private final String shellCommand;
         private final ShellExecService shellExecService;
 
         @Override
         public void run() {
 
-            log.info("Started RiseShellCmdTask on thread {}", Thread.currentThread().getName());
+            log.info("Started ShellCmdTask on thread {}", Thread.currentThread().getName());
 
-            if (!riseShellCmdSubstituted.equals("")) {
-                shellExecService.execShellCmd(riseShellCmdSubstituted);
+            if (!shellCommand.equals("")) {
+                shellExecService.execShellCmd(shellCommand);
             }
 
         }
@@ -144,40 +150,29 @@ class SchedulerService {
     static class TrackerTask implements Runnable {
 
         private final RotctldClientService rotctldClientService;
-        private final List<AzimuthElevation> azimuthElevationList;
-        private final int sleepDuration;
+        private final TrackingData trackingData;
 
         @Override
         public void run() {
 
             log.info("Started TrackerTask on thread {}", Thread.currentThread().getName());
-            rotctldClientService.track(azimuthElevationList, sleepDuration);
+            rotctldClientService.track(trackingData);
 
         }
     }
 
     /**
-     * Next pass fetcher, set-time shell cmd execution
+     * Next pass fetcher
      */
     @Slf4j
     @RequiredArgsConstructor
     static class FetcherTask implements Runnable {
 
-        private final PassEventData passData;
         private final SchedulerService schedulerService;
-        private final ShellExecService shellExecService;
 
         @Override
         public void run() {
-
             log.info("Started FetcherTask on thread {}", Thread.currentThread().getName());
-
-            String setShellCmdSubstituted = passData.getSatelliteData().getSatSetShellCmdSubstituted();
-
-            if (!setShellCmdSubstituted.equals("")) {
-                shellExecService.execShellCmd(setShellCmdSubstituted);
-            }
-
             schedulerService.scheduleNextEvent();
         }
     }

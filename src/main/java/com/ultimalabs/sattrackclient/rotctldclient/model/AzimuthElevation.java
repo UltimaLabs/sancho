@@ -3,7 +3,7 @@ package com.ultimalabs.sattrackclient.rotctldclient.model;
 import lombok.Data;
 
 /**
- * Azimuth/elevation class
+ * Stores azimuth/elevation data pairs
  */
 @Data
 public class AzimuthElevation {
@@ -11,11 +11,22 @@ public class AzimuthElevation {
     /**
      * Azimuth
      */
-    private final double azimuth;
+    private final int azimuth;
 
     /**
      * Elevation
      */
-    private final double elevation;
+    private final int elevation;
+
+    /**
+     * Constructor for arguments of the type double
+     *
+     * @param az azimuth
+     * @param el elevation
+     */
+    public AzimuthElevation(double az, double el) {
+        this.azimuth = (int) Math.round(az);
+        this.elevation = (int) Math.round(el);
+    }
 
 }

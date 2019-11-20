@@ -2,6 +2,7 @@ package com.ultimalabs.sattrackclient.rotctldclient.service;
 
 import com.ultimalabs.sattrackclient.common.config.SatTrackClientConfig;
 import com.ultimalabs.sattrackclient.rotctldclient.model.AzimuthElevation;
+import com.ultimalabs.sattrackclient.rotctldclient.model.TrackingData;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -11,8 +12,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
-import java.util.ArrayList;
-import java.util.List;
+import java.time.Instant;
 
 /**
  * Client service for rotctld
@@ -36,59 +36,81 @@ public class RotctldClientService {
      */
     public boolean parkRotator(AzimuthElevation position) {
 
-        List<AzimuthElevation> positions = new ArrayList<>();
-        positions.add(position);
         int sleepDuration = config.getRotatorConfig().getWaitAfterParkingCommand() * 1000;
 
-        boolean parkingStatus = track(positions, sleepDuration);
+        startConnection();
+        String returnMessage = sendMessage(",\\set_pos " + position.getAzimuth() + " " + position.getElevation());
+        stopConnection();
 
-        if (parkingStatus) {
-            log.info("Parked the rotator: {}", position);
-        } else {
-            log.info("Error parking the rotator.");
+        if (isInvalidResponse(returnMessage)) {
+            log.error("Parking failed; rotctld failed executing setAzEl() command. Response: {}", returnMessage);
+            return false;
         }
 
-        return parkingStatus;
+        try {
+            Thread.sleep(sleepDuration);
+        } catch (InterruptedException e) {
+            log.error("Interrupted exception: {}", e.getMessage());
+        }
+
+        log.info("Parked the rotator: {}", position);
+        return true;
 
     }
 
     /**
      * Tracks the satellite
-     *
+     * <p>
      * Sends a sequence of "set position" commands to the rotctld, with a
      * short pause (sleepDuration) between them.
      *
-     * Please note that the azimuth/elevation data needs to be converted from
-     * the predict app output, smoothing out the azimuth jump when
-     * the satellite passes 0 - 180 degrees line.
-     *
-     * @param azimuthElevationList list of azimuth/elevation positions
-     * @param sleepDuration sleep (in ms) between positioning commands
-     * @return true if the operation was successful
+     * @param trackingData tracking data
      */
-    public boolean track(List<AzimuthElevation> azimuthElevationList, int sleepDuration) {
+    public void track(TrackingData trackingData) {
+
+        int sleepDuration = (int) config.getRotatorConfig().getStepSize() * 1000;
 
         startConnection();
 
-        for (AzimuthElevation azEl : azimuthElevationList) {
+        log.info("Tracking started.");
 
-            String returnMessage = sendMessage(",\\set_pos " + azEl.getAzimuth() + " " + azEl.getElevation());
+        AzimuthElevation oldAzEl = trackingData.getRiseAzimuthElevation();
+
+        do {
+
+            AzimuthElevation newAzEl = trackingData.getCurrentAzimuthElevation();
+
+            if (newAzEl == null || newAzEl == oldAzEl) {
+                if (newAzEl == null) {
+                    log.info("Az/el not found for current timestamp.");
+                }
+                continue;
+            }
+
+            String returnMessage = sendMessage(",\\set_pos " + newAzEl.getAzimuth() + " " + newAzEl.getElevation());
 
             if (isInvalidResponse(returnMessage)) {
                 log.error("Rotctld failed executing setAzEl() command. Response: {}", returnMessage);
-                return false;
             }
+
+            log.info("Rotator set to: {} {}", newAzEl.getAzimuth(), newAzEl.getElevation());
 
             try {
                 Thread.sleep(sleepDuration);
             } catch (InterruptedException e) {
                 log.error("Interrupted exception: {}", e.getMessage());
             }
-        }
+
+            oldAzEl = newAzEl;
+
+        } while ((Instant.now().toEpochMilli() / 1000) < trackingData.getTrackingEnd());
+
+        log.info("Tracking stopped.");
 
         stopConnection();
 
-        return true;
+        // return the rotator to (0, 0)
+        parkRotator(new AzimuthElevation(0, 0));
 
     }
 
