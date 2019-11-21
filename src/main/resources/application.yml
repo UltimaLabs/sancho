@@ -4,6 +4,14 @@ spring:
 
 sattrackclient:
 
+  # enable/disable automatic scheduling
+  # disable scheduler for unit testing
+  schedulerAutoStartDisabled: false
+
+  # how long do we wait in case of error
+  # while scheduling next event
+  schedulerErrorWait: 300 # seconds
+
   # SatTrackAPI base URL
   satTrackApiUrl: https://sattrackapi.ultima.hr:8443/api/v1
 
@@ -14,11 +22,15 @@ sattrackclient:
     longitude: 15.7484
     altitude: 380
 
-  rotatorConfig:
+  rotator:
     rotctldHost: 127.0.0.1
     rotctldPort: 14533
-    waitAfterParkingCommand: 30 # seconds
     stepSize: 0.25 # seconds
+    minAzimuth: 0
+    maxAzimuth: 360
+    minElevation: 0
+    maxElevation: 180
+    waitAfterParkingCommand: 30 # seconds
 
   # satellites we're tracking
 
@@ -34,7 +46,7 @@ sattrackclient:
     - id: 25338
       name: "NOAA15"
       radioFrequency: 137.62
-      minElevation: 30.0
+      minElevation: 10.0
       stepSize: 1
       rotatorEnabled: true
       satRiseShellCmdTemplate: ""
@@ -42,7 +54,7 @@ sattrackclient:
     - id: 28654
       name: "NOAA18"
       radioFrequency: 137.9125
-      minElevation: 30.0
+      minElevation: 10.0
       stepSize: 1
       rotatorEnabled: true
       satRiseShellCmdTemplate: ""
@@ -50,7 +62,15 @@ sattrackclient:
     - id: 33591
       name: "NOAA19"
       radioFrequency: 137.1
-      minElevation: 30.0
+      minElevation: 10.0
+      stepSize: 1
+      rotatorEnabled: true
+      satRiseShellCmdTemplate: ""
+      satSetShellCmdTemplate: ""
+    - id: 40069
+      name: "METEORM2"
+      radioFrequency: 137.1
+      minElevation: 10.0
       stepSize: 1
       rotatorEnabled: true
       satRiseShellCmdTemplate: ""

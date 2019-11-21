@@ -29,14 +29,26 @@ public class RotctldClientService {
     private BufferedReader in;
 
     /**
-     * Parks the rotator
+     * Parks the rotator in a default position
+     */
+    private void parkRotatorInDefaultPosition() {
+
+        int parkAz = config.getRotator().getMaxAzimuth() / 2;
+        int parkEl = config.getRotator().getMaxElevation() / 4;
+
+        parkRotator(new AzimuthElevation(parkAz, parkEl));
+
+    }
+
+    /**
+     * Points the rotator in the specified direction
      *
      * @param position parking azimuth/elevation position
      * @return true if successful
      */
     public boolean parkRotator(AzimuthElevation position) {
 
-        int sleepDuration = config.getRotatorConfig().getWaitAfterParkingCommand() * 1000;
+        int sleepDuration = config.getRotator().getWaitAfterParkingCommand() * 1000;
 
         startConnection();
         String returnMessage = sendMessage(",\\set_pos " + position.getAzimuth() + " " + position.getElevation());
@@ -53,7 +65,7 @@ public class RotctldClientService {
             log.error("Interrupted exception: {}", e.getMessage());
         }
 
-        log.info("Parked the rotator: {}", position);
+        log.info("Parked the rotator at {}, {}.", position.getAzimuth(), position.getElevation());
         return true;
 
     }
@@ -68,7 +80,7 @@ public class RotctldClientService {
      */
     public void track(TrackingData trackingData) {
 
-        int sleepDuration = (int) config.getRotatorConfig().getStepSize() * 1000;
+        int sleepDuration = (int) config.getRotator().getStepSize() * 1000;
 
         startConnection();
 
@@ -76,11 +88,11 @@ public class RotctldClientService {
 
         AzimuthElevation oldAzEl = trackingData.getRiseAzimuthElevation();
 
-        do {
+        while ((Instant.now().toEpochMilli() / 1000) < trackingData.getTrackingEnd()) {
 
             AzimuthElevation newAzEl = trackingData.getCurrentAzimuthElevation();
 
-            if (newAzEl == null || newAzEl == oldAzEl) {
+            if (newAzEl == null || newAzEl.equals(oldAzEl)) {
                 if (newAzEl == null) {
                     log.info("Az/el not found for current timestamp.");
                 }
@@ -93,7 +105,7 @@ public class RotctldClientService {
                 log.error("Rotctld failed executing setAzEl() command. Response: {}", returnMessage);
             }
 
-            log.info("Rotator set to: {} {}", newAzEl.getAzimuth(), newAzEl.getElevation());
+            log.info("Rotator set to: {}, {}", newAzEl.getAzimuth(), newAzEl.getElevation());
 
             try {
                 Thread.sleep(sleepDuration);
@@ -103,14 +115,14 @@ public class RotctldClientService {
 
             oldAzEl = newAzEl;
 
-        } while ((Instant.now().toEpochMilli() / 1000) < trackingData.getTrackingEnd());
+        }
 
         log.info("Tracking stopped.");
 
         stopConnection();
 
-        // return the rotator to (0, 0)
-        parkRotator(new AzimuthElevation(0, 0));
+        // park the rotator
+        parkRotatorInDefaultPosition();
 
     }
 
@@ -155,7 +167,7 @@ public class RotctldClientService {
      */
     private void startConnection() {
         try {
-            clientSocket = new Socket(config.getRotatorConfig().getRotctldHost(), config.getRotatorConfig().getRotctldPort());
+            clientSocket = new Socket(config.getRotator().getRotctldHost(), config.getRotator().getRotctldPort());
         } catch (IOException e) {
             log.error("Error connecting to rotctld host: {}", e.getMessage());
             return;

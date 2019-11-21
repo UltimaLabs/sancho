@@ -19,6 +19,16 @@ import java.util.List;
 public class SatTrackClientConfig {
 
     /**
+     * Enable/disable automatic scheduling
+     */
+    private final boolean schedulerAutoStartDisabled;
+
+    /**
+     * How long do we wait until retry after scheduler error (seconds)
+     */
+    private final int schedulerErrorWait;
+
+    /**
      * SatTrackAPI base URL
      */
     @NotBlank(message = "SatTrackAPI base URL should not be empty")
@@ -34,7 +44,7 @@ public class SatTrackClientConfig {
      * Rotator config
      */
     @NotNull(message = "Rotator config should not be empty")
-    private final RotatorConfig rotatorConfig;
+    private final RotatorConfig rotator;
 
     /**
      * List of satellites we're tracking

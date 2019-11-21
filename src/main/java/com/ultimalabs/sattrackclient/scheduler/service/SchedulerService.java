@@ -1,5 +1,6 @@
 package com.ultimalabs.sattrackclient.scheduler.service;
 
+import com.ultimalabs.sattrackclient.common.config.SatTrackClientConfig;
 import com.ultimalabs.sattrackclient.common.model.PassEventData;
 import com.ultimalabs.sattrackclient.predictclient.service.PredictClientService;
 import com.ultimalabs.sattrackclient.rotctldclient.model.TrackingData;
@@ -12,6 +13,7 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
+import java.util.Calendar;
 import java.util.Date;
 
 /**
@@ -21,6 +23,11 @@ import java.util.Date;
 @Service
 @RequiredArgsConstructor
 class SchedulerService {
+
+    /**
+     * Config object
+     */
+    private final SatTrackClientConfig config;
 
     /**
      * Predict client service
@@ -43,30 +50,52 @@ class SchedulerService {
     private final ThreadPoolTaskScheduler taskScheduler;
 
     /**
-     * Schedules handling of the next event
+     * Scheduling autostart
      */
     @PostConstruct
-    private void scheduleNextEvent() {
+    public void autoStartScheduler() {
 
-        boolean scheduleOk = false;
-        PassEventData nextPass = predictClientService.getNextPass();
-
-        if (nextPass != null) {
-            log.info("Fetched next pass - {}.", nextPass.getSatelliteData().getName());
-            scheduleOk = scheduleTracking(nextPass);
+        if (config.isSchedulerAutoStartDisabled()) {
+            return;
         }
 
-        if (!scheduleOk) {
-            // TODO schedule next fetch
-        }
+        scheduleNextEvent();
 
     }
 
     /**
-     * Schedules tracking and the next pass data fetch
+     * Schedules handling of the next event
+     */
+    private void scheduleNextEvent() {
+
+        Date nextFetch;
+        boolean scheduleOk = false;
+
+        PassEventData nextPass = predictClientService.getNextPass();
+
+        if (nextPass != null) {
+            log.info("Fetched next pass: {}.", nextPass.getSatelliteData().getName());
+            scheduleOk = scheduleTracking(nextPass);
+        }
+
+        if (scheduleOk) {
+            nextFetch = nextPass.getSet();
+        } else {
+            Calendar calendar = Calendar.getInstance();
+            calendar.add(Calendar.SECOND, config.getSchedulerErrorWait());
+            nextFetch = calendar.getTime();
+        }
+
+        // schedule fetching of next pass
+        taskScheduler.schedule(new FetcherTask(this), nextFetch);
+        log.info("Scheduled fetcher: {}", nextFetch);
+
+    }
+
+    /**
+     * Schedules tracking
      * <p>
      * Tracking starts at the next pass rise time.
-     * At that event's set time next pass data is fetched.
      *
      * @param passData pass data
      * @return true if tracking was scheduled successfully
@@ -111,10 +140,6 @@ class SchedulerService {
             taskScheduler.schedule(new ShellCmdTask(setShellCmdSubstituted, shellExecService), fetcherDate);
             log.info("Scheduled set-time cmd exec: {} at {}", setShellCmdSubstituted, fetcherDate);
         }
-
-        // schedule fetching of the next pass data
-        taskScheduler.schedule(new FetcherTask(this), fetcherDate);
-        log.info("Scheduled fetcher: {}", fetcherDate);
 
         return true;
 
@@ -176,5 +201,4 @@ class SchedulerService {
             schedulerService.scheduleNextEvent();
         }
     }
-
 }

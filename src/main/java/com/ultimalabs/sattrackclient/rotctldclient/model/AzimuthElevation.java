@@ -19,6 +19,17 @@ public class AzimuthElevation {
     private final int elevation;
 
     /**
+     * Constructor
+     *
+     * @param az azimuth
+     * @param el elevation
+     */
+    public AzimuthElevation(int az, int el) {
+        this.azimuth = az;
+        this.elevation = el;
+    }
+
+    /**
      * Constructor for arguments of the type double
      *
      * @param az azimuth
