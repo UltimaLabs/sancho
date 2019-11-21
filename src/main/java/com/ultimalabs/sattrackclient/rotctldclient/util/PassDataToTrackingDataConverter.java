@@ -30,6 +30,7 @@ public class PassDataToTrackingDataConverter {
 
         long trackingStart;
         long trackingEnd;
+        int maxElevation;
         AzimuthElevation riseAzEl;
         AzimuthElevation setAzEl;
         Map<Long, AzimuthElevation> azElEntriesHashMap = new HashMap<>();
@@ -44,6 +45,7 @@ public class PassDataToTrackingDataConverter {
         PassEventDetailsEntry lastEntry = passEventDetailsEntries.get(passEventDetailsEntries.size() - 1);
         riseAzEl = new AzimuthElevation(firstEntry.getAz(), firstEntry.getEl());
         setAzEl = new AzimuthElevation(lastEntry.getAz(), lastEntry.getEl());
+        maxElevation = 0;
         trackingStart = firstEntry.getT().getTime() / 1000;
         trackingEnd = lastEntry.getT().getTime() / 1000;
 
@@ -51,6 +53,10 @@ public class PassDataToTrackingDataConverter {
 
             long timeStamp = entry.getT().getTime() / 1000;
             AzimuthElevation azEl = new AzimuthElevation(entry.getAz(), entry.getEl());
+
+            if (azEl.getElevation() > maxElevation) {
+                maxElevation = azEl.getElevation();
+            }
 
             // TODO convert coordinates if needed
 
@@ -60,7 +66,9 @@ public class PassDataToTrackingDataConverter {
 
         }
 
-        return new TrackingData(trackingStart, trackingEnd, riseAzEl, setAzEl, azElEntriesHashMap);
+        log.info("Max elevation: {}", maxElevation);
+
+        return new TrackingData(trackingStart, trackingEnd, riseAzEl, setAzEl, maxElevation, azElEntriesHashMap);
 
     }
 

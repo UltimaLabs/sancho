@@ -37,7 +37,7 @@ public class PredictClientService {
         RestTemplate restTemplate = new RestTemplate();
 
         for (SatelliteData sat : config.getSatelliteData()) {
-            String url = queryUrlBuilder(sat, config.getStation());
+            String url = queryUrlBuilder(config.getSatTrackApiUrl(), sat, config.getStation());
             PassEventData pass;
             try {
                 pass = restTemplate.getForObject(url, PassEventData.class);
@@ -71,14 +71,9 @@ public class PredictClientService {
      * @param station station details
      * @return build service URL
      */
-    private String queryUrlBuilder(SatelliteData sat, StationDetails station) {
+    private String queryUrlBuilder(String satTrackApiUrl, SatelliteData sat, StationDetails station) {
 
-        if (config == null) {
-            log.error("Null config.");
-            return "";
-        }
-
-        String url = config.getSatTrackApiUrl() + "/passes/" + sat.getId() + "/lat/" + station.getLatitude() +
+        String url = satTrackApiUrl + "/passes/" + sat.getId() + "/lat/" + station.getLatitude() +
                 "/lon/" + station.getLongitude() + "/alt/" + station.getAltitude() + "/minEl/" +
                 sat.getMinElevation();
 

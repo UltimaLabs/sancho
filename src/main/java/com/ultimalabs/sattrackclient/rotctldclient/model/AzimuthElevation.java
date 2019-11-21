@@ -4,6 +4,9 @@ import lombok.Data;
 
 /**
  * Stores azimuth/elevation data pairs
+ *
+ * The angles are normalized in 0 to 360 range,
+ * with 360 not included.
  */
 @Data
 public class AzimuthElevation {
@@ -25,8 +28,8 @@ public class AzimuthElevation {
      * @param el elevation
      */
     public AzimuthElevation(int az, int el) {
-        this.azimuth = az;
-        this.elevation = el;
+        this.azimuth = normalizeAngle(az);
+        this.elevation = normalizeAngle(el);
     }
 
     /**
@@ -36,8 +39,22 @@ public class AzimuthElevation {
      * @param el elevation
      */
     public AzimuthElevation(double az, double el) {
-        this.azimuth = (int) Math.round(az);
-        this.elevation = (int) Math.round(el);
+        this.azimuth = normalizeAngle((int) Math.round(az));
+        this.elevation = normalizeAngle((int) Math.round(el));
+    }
+
+    /**
+     * Normalizes an angle to an absolute angle.
+     * The normalized angle will be in the range from 0 to 360, where 360
+     * itself is not included.
+     *
+     * @param angle the angle to normalize
+     * @return the normalized angle that will be in the range of [0,360]
+     */
+    private int normalizeAngle(int angle) {
+
+        angle %= 360;
+        return angle >= 0 ? angle : (angle + 360);
     }
 
 }
