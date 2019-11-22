@@ -27,19 +27,7 @@ public class RotctldClientService {
     private Socket clientSocket;
     private PrintWriter out;
     private BufferedReader in;
-
-    /**
-     * Parks the rotator in a default position
-     */
-    private void parkRotatorInDefaultPosition() {
-
-        int parkAz = config.getRotator().getMaxAzimuth() / 2;
-        int parkEl = config.getRotator().getMaxElevation() / 4;
-
-        parkRotator(new AzimuthElevation(parkAz, parkEl));
-
-    }
-
+    
     /**
      * Points the rotator in the specified direction
      *
@@ -120,9 +108,6 @@ public class RotctldClientService {
         log.info("Tracking stopped.");
 
         stopConnection();
-
-        // park the rotator
-        parkRotatorInDefaultPosition();
 
     }
 
