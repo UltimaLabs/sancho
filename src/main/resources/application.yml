@@ -62,15 +62,15 @@ sattrackclient:
     - id: 33591
       name: "NOAA19"
       radioFrequency: 137.1
-      minElevation: 10.0
+      minElevation: 5.0
       stepSize: 1
       rotatorEnabled: true
       satRiseShellCmdTemplate: ""
       satSetShellCmdTemplate: ""
-    - id: 40069
-      name: "METEORM2"
+    - id: 44387
+      name: "METEOR-M2-2"
       radioFrequency: 137.1
-      minElevation: 10.0
+      minElevation: 5.0
       stepSize: 1
       rotatorEnabled: true
       satRiseShellCmdTemplate: ""

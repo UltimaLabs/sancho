@@ -34,6 +34,7 @@ public class PassDataToTrackingDataConverter {
         AzimuthElevation riseAzEl;
         AzimuthElevation setAzEl;
         Map<Long, AzimuthElevation> azElEntriesHashMap = new HashMap<>();
+        boolean isFlipped;
 
         if (passData == null || passData.getEventDetails().isEmpty()) {
             return null;
@@ -49,27 +50,73 @@ public class PassDataToTrackingDataConverter {
         trackingStart = firstEntry.getT().getTime() / 1000;
         trackingEnd = lastEntry.getT().getTime() / 1000;
 
+        isFlipped = shouldFlip(passEventDetailsEntries);
+
         for (PassEventDetailsEntry entry : passEventDetailsEntries) {
 
             long timeStamp = entry.getT().getTime() / 1000;
-            AzimuthElevation azEl = new AzimuthElevation(entry.getAz(), entry.getEl());
 
-            if (azEl.getElevation() > maxElevation) {
-                maxElevation = azEl.getElevation();
+            AzimuthElevation azEl;
+
+            if (isFlipped) {
+                azEl = new AzimuthElevation(entry.getAz() + 180, 180 - entry.getEl());
+            } else {
+                azEl = new AzimuthElevation(entry.getAz(), entry.getEl());
             }
 
-            // TODO convert coordinates if needed
+            if (AzimuthElevationUtil.normalizeAngle(entry.getEl()) > maxElevation) {
+                maxElevation = AzimuthElevationUtil.normalizeAngle(entry.getEl());
+            }
 
-            log.info("Conv: {} {}", azEl.getAzimuth(), azEl.getElevation() );
+            log.info("({}, {})", azEl.getAzimuth(), azEl.getElevation());
 
             azElEntriesHashMap.put(timeStamp, azEl);
 
         }
 
-        log.info("Max elevation: {}", maxElevation);
-
         return new TrackingData(trackingStart, trackingEnd, riseAzEl, setAzEl, maxElevation, azElEntriesHashMap);
 
     }
+
+    /**
+     * Should the tracking data be flipped?
+     * <p>
+     * Azimuth/elevation needs to be flipped if the satellite passes
+     * through azimuth 0, either west or east.
+     *
+     * @param passEventDetailsEntries list of pass event detail entries
+     * @return true if there's a pass through azimuth 0
+     */
+    private static boolean shouldFlip(List<PassEventDetailsEntry> passEventDetailsEntries) {
+
+        int oldAzimuth = getAzimuth(passEventDetailsEntries.get(0));
+        int newAzimuth;
+
+        for (PassEventDetailsEntry entry : passEventDetailsEntries) {
+
+            newAzimuth = getAzimuth(entry);
+
+            if ((newAzimuth == 0 && oldAzimuth == 359) || (newAzimuth == 359 && oldAzimuth == 0)) {
+                return true;
+            }
+
+            oldAzimuth = newAzimuth;
+
+        }
+
+        return false;
+
+    }
+
+    /**
+     * Extracts normalized azimuth from a pass event detail entry
+     *
+     * @param entry pass event detail entry
+     * @return normalized azimuth
+     */
+    private static int getAzimuth(PassEventDetailsEntry entry) {
+        return AzimuthElevationUtil.normalizeAngle((int) Math.round(entry.getAz()));
+    }
+
 
 }
