@@ -32,8 +32,7 @@ public class AzimuthElevationUtil {
      */
     public static int normalizeAngle(double angle) {
         int intAngle = (int) Math.round(angle);
-        intAngle %= 360;
-        return intAngle >= 0 ? intAngle : (intAngle + 360);
+        return normalizeAngle(intAngle);
     }
 
 }

@@ -44,8 +44,6 @@ public class PassDataToTrackingDataConverter {
 
         PassEventDetailsEntry firstEntry = passEventDetailsEntries.get(0);
         PassEventDetailsEntry lastEntry = passEventDetailsEntries.get(passEventDetailsEntries.size() - 1);
-        riseAzEl = new AzimuthElevation(firstEntry.getAz(), firstEntry.getEl());
-        setAzEl = new AzimuthElevation(lastEntry.getAz(), lastEntry.getEl());
         maxElevation = 0;
         trackingStart = firstEntry.getT().getTime() / 1000;
         trackingEnd = lastEntry.getT().getTime() / 1000;
@@ -72,6 +70,14 @@ public class PassDataToTrackingDataConverter {
 
             azElEntriesHashMap.put(timeStamp, azEl);
 
+        }
+
+        if (isFlipped) {
+            riseAzEl = new AzimuthElevation(firstEntry.getAz() + 180, 180 - firstEntry.getEl());
+            setAzEl = new AzimuthElevation(lastEntry.getAz() + 180, 180 - lastEntry.getEl());
+        } else {
+            riseAzEl = new AzimuthElevation(firstEntry.getAz(), firstEntry.getEl());
+            setAzEl = new AzimuthElevation(lastEntry.getAz(), lastEntry.getEl());
         }
 
         return new TrackingData(trackingStart, trackingEnd, riseAzEl, setAzEl, maxElevation, azElEntriesHashMap);
