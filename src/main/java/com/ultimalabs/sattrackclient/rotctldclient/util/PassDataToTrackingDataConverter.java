@@ -66,8 +66,6 @@ public class PassDataToTrackingDataConverter {
                 maxElevation = AzimuthElevationUtil.normalizeAngle(entry.getEl());
             }
 
-            log.info("({}, {})", azEl.getAzimuth(), azEl.getElevation());
-
             azElEntriesHashMap.put(timeStamp, azEl);
 
         }

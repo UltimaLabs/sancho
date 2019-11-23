@@ -4,6 +4,14 @@ spring:
 
 sattrackclient:
 
+  # enable/disable automatic scheduling
+  # disable scheduler for unit testing
+  schedulerAutoStartDisabled: false
+
+  # how long do we wait in case of error
+  # while scheduling next event
+  schedulerErrorWait: 300 # seconds
+
   # SatTrackAPI base URL
   satTrackApiUrl: https://sattrackapi.ultima.hr:8443/api/v1
 
@@ -27,25 +35,49 @@ sattrackclient:
   satelliteData:
     - id: 25338
       name: "NOAA15"
-      radioFrequency: 137.5
-      minElevation: 10.0
-      stepSize: 0.1
+      radioFrequency: 137.62
+      minElevation: 5.0
+      stepSize: 1
       rotatorEnabled: true
       satRiseShellCmdTemplate: ""
       satSetShellCmdTemplate: ""
     - id: 28654
       name: "NOAA18"
-      radioFrequency: 137.19125
-      minElevation: 10.0
-      stepSize: 0.1
+      radioFrequency: 137.9125
+      minElevation: 5.0
+      stepSize: 1
       rotatorEnabled: true
       satRiseShellCmdTemplate: ""
       satSetShellCmdTemplate: ""
     - id: 33591
       name: "NOAA19"
       radioFrequency: 137.1
-      minElevation: 10.0
-      stepSize: 0.1
+      minElevation: 5.0
+      stepSize: 1
+      rotatorEnabled: true
+      satRiseShellCmdTemplate: ""
+      satSetShellCmdTemplate: ""
+    - id: 40069
+      name: "METEOR-M2"
+      radioFrequency: 137.1
+      minElevation: 5.0
+      stepSize: 1
+      rotatorEnabled: true
+      satRiseShellCmdTemplate: ""
+      satSetShellCmdTemplate: ""
+    - id: 44387
+      name: "METEOR-M2-2"
+      radioFrequency: 137.1
+      minElevation: 5.0
+      stepSize: 1
+      rotatorEnabled: true
+      satRiseShellCmdTemplate: ""
+      satSetShellCmdTemplate: ""
+    - id: 98067A
+      name: "ISS"
+      radioFrequency: 137.1
+      minElevation: 5.0
+      stepSize: 1
       rotatorEnabled: true
       satRiseShellCmdTemplate: ""
       satSetShellCmdTemplate: ""
