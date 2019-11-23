@@ -64,7 +64,7 @@ public class RotctldClientService {
 
         startConnection();
 
-        log.info("Tracking started.");
+        log.info("Started tracking {}.", trackingData.getSatName());
 
         AzimuthElevation oldAzEl = trackingData.getRiseAzimuthElevation();
 
@@ -97,7 +97,7 @@ public class RotctldClientService {
 
         }
 
-        log.info("Tracking stopped.");
+        log.info("Stopped tracking {}.", trackingData.getSatName());
 
         stopConnection();
 

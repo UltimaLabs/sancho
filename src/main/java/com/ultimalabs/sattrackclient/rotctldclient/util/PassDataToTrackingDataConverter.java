@@ -28,25 +28,24 @@ public class PassDataToTrackingDataConverter {
      */
     public static TrackingData convert(PassEventData passData) {
 
-        long trackingStart;
-        long trackingEnd;
+        if (passData == null || passData.getEventDetails().isEmpty()) {
+            return null;
+        }
+
+        List<PassEventDetailsEntry> passEventDetailsEntries = passData.getEventDetails();
+        PassEventDetailsEntry firstEntry = passEventDetailsEntries.get(0);
+        PassEventDetailsEntry lastEntry = passEventDetailsEntries.get(passEventDetailsEntries.size() - 1);
+
+        String satName = passData.getSatelliteData().getName();
+        long trackingStart = firstEntry.getT().getTime() / 1000;
+        long trackingEnd = lastEntry.getT().getTime() / 1000;
         int maxElevation;
         AzimuthElevation riseAzEl;
         AzimuthElevation setAzEl;
         Map<Long, AzimuthElevation> azElEntriesHashMap = new HashMap<>();
         boolean isFlipped;
 
-        if (passData == null || passData.getEventDetails().isEmpty()) {
-            return null;
-        }
-
-        List<PassEventDetailsEntry> passEventDetailsEntries = passData.getEventDetails();
-
-        PassEventDetailsEntry firstEntry = passEventDetailsEntries.get(0);
-        PassEventDetailsEntry lastEntry = passEventDetailsEntries.get(passEventDetailsEntries.size() - 1);
         maxElevation = 0;
-        trackingStart = firstEntry.getT().getTime() / 1000;
-        trackingEnd = lastEntry.getT().getTime() / 1000;
 
         isFlipped = shouldFlip(passEventDetailsEntries);
 
@@ -78,7 +77,7 @@ public class PassDataToTrackingDataConverter {
             setAzEl = new AzimuthElevation(lastEntry.getAz(), lastEntry.getEl());
         }
 
-        return new TrackingData(trackingStart, trackingEnd, riseAzEl, setAzEl, maxElevation, azElEntriesHashMap);
+        return new TrackingData(satName, trackingStart, trackingEnd, riseAzEl, setAzEl, maxElevation, azElEntriesHashMap);
 
     }
 

@@ -11,11 +11,39 @@ import java.util.Map;
 @Data
 public class TrackingData {
 
+    /**
+     * Satellite name
+     */
+    private final String satName;
+
+    /**
+     * Timestamp (epoch, seconds) of tracking start
+     */
     private final long trackingStart;
+
+    /**
+     * Timestamp (epoch, seconds) of tracking end
+     */
     private final long trackingEnd;
+
+    /**
+     * Rise azimuth and elevation
+     */
     private final AzimuthElevation riseAzimuthElevation;
+
+    /**
+     * Set azimuth and elevation
+     */
     private final AzimuthElevation setAzimuthElevation;
+
+    /**
+     * Maximum elevation, non-flipped
+     */
     private final int maxElevation;
+
+    /**
+     * Map of maximum/elevation entries
+     */
     private final Map<Long, AzimuthElevation> azimuthElevationMap;
 
     /**
