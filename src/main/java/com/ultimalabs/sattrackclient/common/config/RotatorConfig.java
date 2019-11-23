@@ -29,7 +29,7 @@ public class RotatorConfig {
      * Use 0 if rotctld is not used
      */
     @Min(value = 0, message = "Invalid rotctldPort - mimimum value is  0")
-    @Max(value = 1, message = "Invalid rotctldPort - maximum value is  65535")
+    @Max(value = 65535, message = "Invalid rotctldPort - maximum value is  65535")
     private final int rotctldPort;
 
     /**
