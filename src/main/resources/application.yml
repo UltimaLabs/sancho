@@ -26,11 +26,6 @@ sattrackclient:
     rotctldHost: 127.0.0.1
     rotctldPort: 14533
     stepSize: 0.25 # seconds
-    minAzimuth: 0
-    maxAzimuth: 360
-    minElevation: 0
-    maxElevation: 180
-    waitAfterParkingCommand: 30 # seconds
 
   # satellites we're tracking
 

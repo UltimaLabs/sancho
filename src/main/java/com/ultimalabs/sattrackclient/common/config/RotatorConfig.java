@@ -19,21 +19,8 @@ public class RotatorConfig {
     private final int rotctldPort;
 
     /**
-     * How long do we wait after issuing parking command (seconds)
-     */
-    private final int waitAfterParkingCommand;
-
-    /**
      * Sleep duration between two "set position" tracking commands (seconds)
      */
     private final double stepSize;
-
-    private final int minAzimuth;
-
-    private final int maxAzimuth;
-
-    private final int minElevation;
-
-    private final int maxElevation;
 
 }

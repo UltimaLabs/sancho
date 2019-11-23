@@ -27,7 +27,7 @@ public class RotctldClientService {
     private Socket clientSocket;
     private PrintWriter out;
     private BufferedReader in;
-    
+
     /**
      * Points the rotator in the specified direction
      *
@@ -36,8 +36,6 @@ public class RotctldClientService {
      */
     public boolean parkRotator(AzimuthElevation position) {
 
-        int sleepDuration = config.getRotator().getWaitAfterParkingCommand() * 1000;
-
         startConnection();
         String returnMessage = sendMessage(",\\set_pos " + position.getAzimuth() + " " + position.getElevation());
         stopConnection();
@@ -45,12 +43,6 @@ public class RotctldClientService {
         if (isInvalidResponse(returnMessage)) {
             log.error("Parking failed; rotctld failed executing setAzEl() command. Response: {}", returnMessage);
             return false;
-        }
-
-        try {
-            Thread.sleep(sleepDuration);
-        } catch (InterruptedException e) {
-            log.error("Interrupted exception: {}", e.getMessage());
         }
 
         log.info("Parked the rotator at {}, {}.", position.getAzimuth(), position.getElevation());
