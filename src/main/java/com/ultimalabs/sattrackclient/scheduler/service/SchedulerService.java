@@ -6,6 +6,9 @@ import com.ultimalabs.sattrackclient.predictclient.service.PredictClientService;
 import com.ultimalabs.sattrackclient.rotctldclient.model.TrackingData;
 import com.ultimalabs.sattrackclient.rotctldclient.service.RotctldClientService;
 import com.ultimalabs.sattrackclient.rotctldclient.util.PassDataToTrackingDataConverter;
+import com.ultimalabs.sattrackclient.scheduler.runnables.FetcherTask;
+import com.ultimalabs.sattrackclient.scheduler.runnables.ShellCmdTask;
+import com.ultimalabs.sattrackclient.scheduler.runnables.TrackerTask;
 import com.ultimalabs.sattrackclient.shellexec.service.ShellExecService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -22,7 +25,7 @@ import java.util.Date;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-class SchedulerService {
+public class SchedulerService {
 
     /**
      * Config object
@@ -66,7 +69,7 @@ class SchedulerService {
     /**
      * Schedules handling of the next event
      */
-    private void scheduleNextEvent() {
+    public void scheduleNextEvent() {
 
         Date nextFetch;
         boolean scheduleOk = false;
@@ -145,60 +148,5 @@ class SchedulerService {
 
     }
 
-    /**
-     * Shell command execution
-     */
-    @Slf4j
-    @RequiredArgsConstructor
-    static class ShellCmdTask implements Runnable {
 
-        private final String shellCommand;
-        private final ShellExecService shellExecService;
-
-        @Override
-        public void run() {
-
-            log.info("Started ShellCmdTask on thread {}", Thread.currentThread().getName());
-
-            if (!shellCommand.equals("")) {
-                shellExecService.execShellCmd(shellCommand);
-            }
-
-        }
-    }
-
-    /**
-     * Satellite tracking
-     */
-    @Slf4j
-    @RequiredArgsConstructor
-    static class TrackerTask implements Runnable {
-
-        private final RotctldClientService rotctldClientService;
-        private final TrackingData trackingData;
-
-        @Override
-        public void run() {
-
-            log.info("Started TrackerTask on thread {}", Thread.currentThread().getName());
-            rotctldClientService.track(trackingData);
-
-        }
-    }
-
-    /**
-     * Next pass fetcher
-     */
-    @Slf4j
-    @RequiredArgsConstructor
-    static class FetcherTask implements Runnable {
-
-        private final SchedulerService schedulerService;
-
-        @Override
-        public void run() {
-            log.info("Started FetcherTask on thread {}", Thread.currentThread().getName());
-            schedulerService.scheduleNextEvent();
-        }
-    }
 }

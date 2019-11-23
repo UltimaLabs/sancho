@@ -10,7 +10,7 @@ sattrackclient:
 
   # how long do we wait in case of error
   # while scheduling next event
-  schedulerErrorWait: 300 # seconds
+  schedulerErrorWait: 180 # seconds
 
   # SatTrackAPI base URL
   satTrackApiUrl: https://sattrackapi.ultima.hr:8443/api/v1
