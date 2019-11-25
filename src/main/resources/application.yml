@@ -26,6 +26,8 @@ sattrackclient:
     rotctldHost: 127.0.0.1
     rotctldPort: 14533
     stepSize: 0.25 # seconds
+    halfFlipHighElPasses: true # should the second half of passes through or near zenith be flipped?
+    halfFlipHighElPassesMinElevation: 75 # minimum elevation for half-flip
 
   # satellites we're tracking
 

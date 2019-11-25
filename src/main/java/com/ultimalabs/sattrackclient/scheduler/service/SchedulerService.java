@@ -108,6 +108,8 @@ public class SchedulerService {
         Date trackerDate = passData.getRisePoint().getT();
         Date fetcherDate = passData.getSetPoint().getT();
         boolean rotatorEnabled = passData.getSatelliteData().isRotatorEnabled();
+        boolean halfFlip = config.getRotator().isHalfFlipHighElPasses();
+        int halfFlipMinElevation = config.getRotator().getHalfFlipHighElPassesMinElevation();
         double stepSize = passData.getSatelliteData().getStepSize();
         String riseShellCmdSubstituted = passData.getSatelliteData().getSatRiseShellCmdSubstituted();
         String setShellCmdSubstituted = passData.getSatelliteData().getSatSetShellCmdSubstituted();
@@ -116,7 +118,7 @@ public class SchedulerService {
         if (rotatorEnabled && stepSize != 0.0) {
 
             // convert the pass data into tracking format
-            TrackingData trackingData = PassDataToTrackingDataConverter.convert(passData);
+            TrackingData trackingData = PassDataToTrackingDataConverter.convert(passData, halfFlip, halfFlipMinElevation);
 
             // park the rotator in the starting position
             boolean parkOk = rotctldClientService.parkRotator(trackingData.getRiseAzimuthElevation());

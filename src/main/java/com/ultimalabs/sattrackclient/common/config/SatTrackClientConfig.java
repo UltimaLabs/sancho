@@ -22,7 +22,6 @@ public class SatTrackClientConfig {
     /**
      * Enable/disable automatic scheduling
      */
-    @NotNull(message = "schedulerAutoStartDisabled should not be empty")
     private final boolean schedulerAutoStartDisabled;
 
     /**

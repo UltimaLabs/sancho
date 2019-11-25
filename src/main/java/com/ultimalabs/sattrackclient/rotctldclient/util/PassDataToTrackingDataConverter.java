@@ -26,7 +26,7 @@ public class PassDataToTrackingDataConverter {
      * @param passData pass event data
      * @return tracking data
      */
-    public static TrackingData convert(SatellitePass passData) {
+    public static TrackingData convert(SatellitePass passData, boolean halfFlipHighElPasses, int halfFlipHighElPassesMinElevation) {
 
         if (passData == null || passData.getEventDetails().isEmpty()) {
             return null;
@@ -36,34 +36,32 @@ public class PassDataToTrackingDataConverter {
 
         String satName = passData.getSatelliteData().getName();
         long trackingStart = passData.getRisePoint().getT().getTime() / 1000;
+        long midPointTime = passData.getMidPoint().getT().getTime() / 1000;
+        int midPointAzimuth = AzimuthElevationUtil.normalizeAngle(passData.getMidPoint().getAz());
+        int midPointElevation = AzimuthElevationUtil.normalizeAngle(passData.getMidPoint().getEl());
         long trackingEnd = passData.getSetPoint().getT().getTime() / 1000;
-        AzimuthElevation riseAzEl;
-        AzimuthElevation setAzEl;
         Map<Long, AzimuthElevation> azElEntriesHashMap = new HashMap<>();
         boolean isFlipped = shouldFlip(passEventDetailsEntries);
+        boolean halfFlip = halfFlipHighElPasses && midPointElevation >= halfFlipHighElPassesMinElevation;
 
         for (PassEventDataPoint entry : passEventDetailsEntries) {
 
             long timeStamp = entry.getT().getTime() / 1000;
+            AzimuthElevation azEl = flipConversion(entry, isFlipped);
 
-            AzimuthElevation azEl;
-
-            if (isFlipped) {
-                azEl = new AzimuthElevation(entry.getAz() + 180, 180 - entry.getEl());
-            } else {
-                azEl = new AzimuthElevation(entry.getAz(), entry.getEl());
+            if (halfFlip && timeStamp >= midPointTime) {
+                // azEl = halfFlipConversion(azEl, midPointAzimuth, midPointElevation);
             }
 
             azElEntriesHashMap.put(timeStamp, azEl);
 
         }
 
-        if (isFlipped) {
-            riseAzEl = new AzimuthElevation(passData.getRisePoint().getAz() + 180, 180 - passData.getRisePoint().getEl());
-            setAzEl = new AzimuthElevation(passData.getSetPoint().getAz() + 180, 180 - passData.getSetPoint().getEl());
-        } else {
-            riseAzEl = new AzimuthElevation(passData.getRisePoint().getAz(), passData.getRisePoint().getEl());
-            setAzEl = new AzimuthElevation(passData.getSetPoint().getAz(), passData.getSetPoint().getEl());
+        AzimuthElevation riseAzEl = flipConversion(passData.getRisePoint(), isFlipped);
+        AzimuthElevation setAzEl = flipConversion(passData.getSetPoint(), isFlipped);
+
+        if (halfFlip) {
+            // setAzEl = halfFlipConversion(setAzEl, midPointAzimuth, midPointElevation);
         }
 
         return new TrackingData(satName,
@@ -116,6 +114,35 @@ public class PassDataToTrackingDataConverter {
      */
     private static int getAzimuth(PassEventDataPoint entry) {
         return AzimuthElevationUtil.normalizeAngle((int) Math.round(entry.getAz()));
+    }
+
+
+    private static AzimuthElevation flipConversion(PassEventDataPoint dataPoint, boolean flip) {
+
+        if (flip) {
+            log.info("Flip: ({}, {}) -> ({}, {})",
+                    dataPoint.getAz(),
+                    dataPoint.getEl(),
+                    dataPoint.getAz() + 180,
+                    180 - dataPoint.getEl()
+            );
+            return new AzimuthElevation(dataPoint.getAz() + 180, 180 - dataPoint.getEl());
+        }
+
+        return new AzimuthElevation(dataPoint.getAz(), dataPoint.getEl());
+
+    }
+
+    private static AzimuthElevation halfFlipConversion(AzimuthElevation oldAzEl, int midpointAz, int midpointEl) {
+
+        int oldAz = oldAzEl.getAzimuth();
+        int oldEl = oldAzEl.getElevation();
+
+        int newAz = midpointAz + (midpointAz - oldAz);
+        int newEl = midpointEl + (midpointEl - oldEl);
+
+        log.info("Half-flip: ({}, {}) -> ({}, {}) -> ({}, {})", oldAz, oldEl, midpointAz, midpointEl, newAz, newEl);
+        return new AzimuthElevation(newAz, newEl);
     }
 
 
