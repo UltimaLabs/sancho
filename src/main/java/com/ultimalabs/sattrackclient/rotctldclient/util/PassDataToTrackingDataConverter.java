@@ -1,7 +1,7 @@
 package com.ultimalabs.sattrackclient.rotctldclient.util;
 
-import com.ultimalabs.sattrackclient.common.model.PassEventData;
-import com.ultimalabs.sattrackclient.common.model.PassEventDetailsEntry;
+import com.ultimalabs.sattrackclient.common.model.PassEventDataPoint;
+import com.ultimalabs.sattrackclient.common.model.SatellitePass;
 import com.ultimalabs.sattrackclient.rotctldclient.model.AzimuthElevation;
 import com.ultimalabs.sattrackclient.rotctldclient.model.TrackingData;
 import lombok.extern.slf4j.Slf4j;
@@ -26,30 +26,23 @@ public class PassDataToTrackingDataConverter {
      * @param passData pass event data
      * @return tracking data
      */
-    public static TrackingData convert(PassEventData passData) {
+    public static TrackingData convert(SatellitePass passData) {
 
         if (passData == null || passData.getEventDetails().isEmpty()) {
             return null;
         }
 
-        List<PassEventDetailsEntry> passEventDetailsEntries = passData.getEventDetails();
-        PassEventDetailsEntry firstEntry = passEventDetailsEntries.get(0);
-        PassEventDetailsEntry lastEntry = passEventDetailsEntries.get(passEventDetailsEntries.size() - 1);
+        List<PassEventDataPoint> passEventDetailsEntries = passData.getEventDetails();
 
         String satName = passData.getSatelliteData().getName();
-        long trackingStart = firstEntry.getT().getTime() / 1000;
-        long trackingEnd = lastEntry.getT().getTime() / 1000;
-        int maxElevation;
+        long trackingStart = passData.getRisePoint().getT().getTime() / 1000;
+        long trackingEnd = passData.getSetPoint().getT().getTime() / 1000;
         AzimuthElevation riseAzEl;
         AzimuthElevation setAzEl;
         Map<Long, AzimuthElevation> azElEntriesHashMap = new HashMap<>();
-        boolean isFlipped;
+        boolean isFlipped = shouldFlip(passEventDetailsEntries);
 
-        maxElevation = 0;
-
-        isFlipped = shouldFlip(passEventDetailsEntries);
-
-        for (PassEventDetailsEntry entry : passEventDetailsEntries) {
+        for (PassEventDataPoint entry : passEventDetailsEntries) {
 
             long timeStamp = entry.getT().getTime() / 1000;
 
@@ -61,23 +54,26 @@ public class PassDataToTrackingDataConverter {
                 azEl = new AzimuthElevation(entry.getAz(), entry.getEl());
             }
 
-            if (AzimuthElevationUtil.normalizeAngle(entry.getEl()) > maxElevation) {
-                maxElevation = AzimuthElevationUtil.normalizeAngle(entry.getEl());
-            }
-
             azElEntriesHashMap.put(timeStamp, azEl);
 
         }
 
         if (isFlipped) {
-            riseAzEl = new AzimuthElevation(firstEntry.getAz() + 180, 180 - firstEntry.getEl());
-            setAzEl = new AzimuthElevation(lastEntry.getAz() + 180, 180 - lastEntry.getEl());
+            riseAzEl = new AzimuthElevation(passData.getRisePoint().getAz() + 180, 180 - passData.getRisePoint().getEl());
+            setAzEl = new AzimuthElevation(passData.getSetPoint().getAz() + 180, 180 - passData.getSetPoint().getEl());
         } else {
-            riseAzEl = new AzimuthElevation(firstEntry.getAz(), firstEntry.getEl());
-            setAzEl = new AzimuthElevation(lastEntry.getAz(), lastEntry.getEl());
+            riseAzEl = new AzimuthElevation(passData.getRisePoint().getAz(), passData.getRisePoint().getEl());
+            setAzEl = new AzimuthElevation(passData.getSetPoint().getAz(), passData.getSetPoint().getEl());
         }
 
-        return new TrackingData(satName, trackingStart, trackingEnd, riseAzEl, setAzEl, maxElevation, azElEntriesHashMap);
+        return new TrackingData(satName,
+                trackingStart,
+                trackingEnd,
+                riseAzEl,
+                setAzEl,
+                AzimuthElevationUtil.normalizeAngle(passData.getMidPoint().getEl()),
+                azElEntriesHashMap
+        );
 
     }
 
@@ -90,16 +86,17 @@ public class PassDataToTrackingDataConverter {
      * @param passEventDetailsEntries list of pass event detail entries
      * @return true if there's a pass through azimuth 0
      */
-    private static boolean shouldFlip(List<PassEventDetailsEntry> passEventDetailsEntries) {
+    private static boolean shouldFlip(List<PassEventDataPoint> passEventDetailsEntries) {
 
         int oldAzimuth = getAzimuth(passEventDetailsEntries.get(0));
         int newAzimuth;
 
-        for (PassEventDetailsEntry entry : passEventDetailsEntries) {
+        for (PassEventDataPoint entry : passEventDetailsEntries) {
 
             newAzimuth = getAzimuth(entry);
 
             if ((newAzimuth == 0 && oldAzimuth == 359) || (newAzimuth == 359 && oldAzimuth == 0)) {
+                log.info("Flipped pass.");
                 return true;
             }
 
@@ -117,7 +114,7 @@ public class PassDataToTrackingDataConverter {
      * @param entry pass event detail entry
      * @return normalized azimuth
      */
-    private static int getAzimuth(PassEventDetailsEntry entry) {
+    private static int getAzimuth(PassEventDataPoint entry) {
         return AzimuthElevationUtil.normalizeAngle((int) Math.round(entry.getAz()));
     }
 

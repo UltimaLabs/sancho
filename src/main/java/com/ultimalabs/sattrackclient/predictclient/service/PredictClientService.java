@@ -3,7 +3,7 @@ package com.ultimalabs.sattrackclient.predictclient.service;
 import com.ultimalabs.sattrackclient.common.config.SatTrackClientConfig;
 import com.ultimalabs.sattrackclient.common.config.SatelliteData;
 import com.ultimalabs.sattrackclient.common.config.StationDetails;
-import com.ultimalabs.sattrackclient.common.model.PassEventData;
+import com.ultimalabs.sattrackclient.common.model.SatellitePass;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.text.StringSubstitutor;
@@ -31,16 +31,16 @@ public class PredictClientService {
      *
      * @return pass data
      */
-    public PassEventData getNextPass() {
+    public SatellitePass getNextPass() {
 
-        List<PassEventData> passDataList = new ArrayList<>();
+        List<SatellitePass> passDataList = new ArrayList<>();
         RestTemplate restTemplate = new RestTemplate();
 
         for (SatelliteData sat : config.getSatelliteData()) {
             String url = queryUrlBuilder(config.getSatTrackApiUrl(), sat, config.getStation());
-            PassEventData pass;
+            SatellitePass pass;
             try {
-                pass = restTemplate.getForObject(url, PassEventData.class);
+                pass = restTemplate.getForObject(url, SatellitePass.class);
                 if (pass != null) {
                     pass.setSatelliteData(sat);
                     substituteShellVariables(pass);
@@ -89,7 +89,7 @@ public class PredictClientService {
      * Substitutes rise/set shell cmd templates with pass/satellite data
      * @param pass pass data
      */
-    private void substituteShellVariables(PassEventData pass) {
+    private void substituteShellVariables(SatellitePass pass) {
 
         Map<String, String> valuesMap = new HashMap<>();
 
@@ -97,8 +97,8 @@ public class PredictClientService {
         valuesMap.put("satName", pass.getSatelliteData().getName());
         valuesMap.put("radioFrequency", Double.toString(pass.getSatelliteData().getRadioFrequency()));
         valuesMap.put("predictTime", Long.toString(pass.getNow().getTime() / 1000));
-        valuesMap.put("rise", Long.toString(pass.getRise().getTime() / 1000));
-        valuesMap.put("set", Long.toString(pass.getSet().getTime() / 1000));
+        valuesMap.put("rise", Long.toString(pass.getRisePoint().getT().getTime() / 1000));
+        valuesMap.put("set", Long.toString(pass.getSetPoint().getT().getTime() / 1000));
         valuesMap.put("duration", Double.toString(pass.getDuration()));
 
         String riseTemplateString = pass.getSatelliteData().getSatRiseShellCmdTemplate();

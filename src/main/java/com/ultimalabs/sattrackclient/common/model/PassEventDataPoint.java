@@ -9,7 +9,7 @@ import java.util.Date;
  * Satellite pass details
  */
 @Data
-public class PassEventDetailsEntry implements Serializable {
+public class PassEventDataPoint implements Serializable {
 
     /**
      * Date and time for this data item

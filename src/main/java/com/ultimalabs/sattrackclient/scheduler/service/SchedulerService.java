@@ -1,7 +1,7 @@
 package com.ultimalabs.sattrackclient.scheduler.service;
 
 import com.ultimalabs.sattrackclient.common.config.SatTrackClientConfig;
-import com.ultimalabs.sattrackclient.common.model.PassEventData;
+import com.ultimalabs.sattrackclient.common.model.SatellitePass;
 import com.ultimalabs.sattrackclient.predictclient.service.PredictClientService;
 import com.ultimalabs.sattrackclient.rotctldclient.model.TrackingData;
 import com.ultimalabs.sattrackclient.rotctldclient.service.RotctldClientService;
@@ -74,7 +74,7 @@ public class SchedulerService {
         Date nextFetch;
         boolean scheduleOk = false;
 
-        PassEventData nextPass = predictClientService.getNextPass();
+        SatellitePass nextPass = predictClientService.getNextPass();
 
         if (nextPass != null) {
             log.info("Fetched next pass: {}.", nextPass.getSatelliteData().getName());
@@ -82,7 +82,7 @@ public class SchedulerService {
         }
 
         if (scheduleOk) {
-            nextFetch = nextPass.getSet();
+            nextFetch = nextPass.getSetPoint().getT();
         } else {
             Calendar calendar = Calendar.getInstance();
             calendar.add(Calendar.SECOND, config.getSchedulerErrorWait());
@@ -103,10 +103,10 @@ public class SchedulerService {
      * @param passData pass data
      * @return true if tracking was scheduled successfully
      */
-    private boolean scheduleTracking(PassEventData passData) {
+    private boolean scheduleTracking(SatellitePass passData) {
 
-        Date trackerDate = passData.getRise();
-        Date fetcherDate = passData.getSet();
+        Date trackerDate = passData.getRisePoint().getT();
+        Date fetcherDate = passData.getSetPoint().getT();
         boolean rotatorEnabled = passData.getSatelliteData().isRotatorEnabled();
         double stepSize = passData.getSatelliteData().getStepSize();
         String riseShellCmdSubstituted = passData.getSatelliteData().getSatRiseShellCmdSubstituted();
@@ -125,7 +125,7 @@ public class SchedulerService {
                 // schedule tracker task
                 taskScheduler.schedule(new TrackerTask(rotctldClientService, trackingData), trackerDate);
                 log.info("Scheduled tracking: {}, {} - {}",
-                        passData.getSatelliteData().getName(), trackerDate, passData.getSet());
+                        passData.getSatelliteData().getName(), trackerDate, passData.getSetPoint().getT());
             } else {
                 log.error("Tracking canceled due to parking error.");
                 return false;

@@ -1,5 +1,5 @@
 [rpisdr]
-rpisdr ansible_ssh_host=localhost ansible_ssh_port=2015 ansible_ssh_user=ultima
+rpisdrhost ansible_ssh_host=localhost ansible_ssh_port=2015 ansible_ssh_user=ultima
 
 [rotrpi]
 rpi4 ansible_ssh_host=localhost ansible_ssh_port=2159 ansible_ssh_user=pi
