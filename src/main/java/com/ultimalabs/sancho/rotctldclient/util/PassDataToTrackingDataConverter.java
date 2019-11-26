@@ -81,7 +81,7 @@ public class PassDataToTrackingDataConverter {
 
             newAzimuth = getAzimuth(entry);
 
-            if ((newAzimuth == 0 && oldAzimuth == 359) || (newAzimuth == 359 && oldAzimuth == 0)) {
+            if (Math.abs(newAzimuth - oldAzimuth) > 300) {
                 log.info("Flipped pass.");
                 return true;
             }

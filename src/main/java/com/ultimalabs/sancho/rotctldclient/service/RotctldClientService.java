@@ -85,8 +85,6 @@ public class RotctldClientService {
                 log.error("Rotctld failed executing setAzEl() command. Response: {}", returnMessage);
             }
 
-            log.info("Rotator set to: {}, {}", newAzEl.getAzimuth(), newAzEl.getElevation());
-
             try {
                 Thread.sleep(sleepDuration);
             } catch (InterruptedException e) {
