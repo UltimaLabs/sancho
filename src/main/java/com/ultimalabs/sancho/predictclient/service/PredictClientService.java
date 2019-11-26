@@ -93,6 +93,7 @@ public class PredictClientService {
 
         Map<String, String> valuesMap = new HashMap<>();
 
+        valuesMap.put("tle", pass.getTle());
         valuesMap.put("satId", pass.getSatelliteData().getId());
         valuesMap.put("satName", pass.getSatelliteData().getName());
         valuesMap.put("radioFrequency", Double.toString(pass.getSatelliteData().getRadioFrequency()));

@@ -38,16 +38,4 @@ public class RotatorConfig {
     @DecimalMin(value = "0.01", message = "Step size should not be less than 0.01")
     private final double stepSize;
 
-    /**
-     * Should the second half of passes through or near zenith be flipped
-     */
-    private final boolean halfFlipHighElPasses;
-
-    /**
-     * Minimum elevation for half-flip
-     */
-    @Min(value = 70, message = "Invalid halfFlipHighElPassesMinElevation - minimum value is 70")
-    @Max(value = 90, message = "Invalid halfFlipHighElPassesMinElevation - maximum value is 90")
-    private final int halfFlipHighElPassesMinElevation;
-
 }

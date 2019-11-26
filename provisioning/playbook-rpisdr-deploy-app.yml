@@ -1,6 +1,6 @@
 #!/usr/bin/env ansible-playbook
 ---
-- name: SatTrackClient - deploy as a service
+- name: Sancho - deploy as a systemd service
   hosts: rpisdr
   become: True
   become_user: root
