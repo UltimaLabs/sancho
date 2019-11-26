@@ -10,7 +10,7 @@ sattrackclient:
 
   # how long do we wait in case of error
   # while scheduling next event
-  schedulerErrorWait: 300 # seconds
+  schedulerErrorWait: 180 # seconds
 
   # SatTrackAPI base URL
   satTrackApiUrl: https://sattrackapi.ultima.hr:8443/api/v1
@@ -26,11 +26,8 @@ sattrackclient:
     rotctldHost: 127.0.0.1
     rotctldPort: 14533
     stepSize: 0.25 # seconds
-    minAzimuth: 0
-    maxAzimuth: 360
-    minElevation: 0
-    maxElevation: 180
-    waitAfterParkingCommand: 30 # seconds
+    halfFlipHighElPasses: true # should the second half of passes through or near zenith be flipped?
+    halfFlipHighElPassesMinElevation: 75 # minimum elevation for half-flip
 
   # satellites we're tracking
 

@@ -22,6 +22,13 @@ sattrackclient:
     longitude: 15.7484
     altitude: 380
 
+  rotator:
+    rotctldHost: 127.0.0.1
+    rotctldPort: 4533
+    stepSize: 0.25 # seconds
+    halfFlipHighElPasses: true # should the second half of passes through or near zenith be flipped?
+    halfFlipHighElPassesMinElevation: 75 # minimum elevation for half-flip
+
   # satellites we're tracking
 
   # You can use the following placeholders in shell cmd templates:
@@ -38,7 +45,7 @@ sattrackclient:
       radioFrequency: 137.62
       minElevation: 5.0
       stepSize: 1
-      rotatorEnabled: true
+      rotatorEnabled: false
       satRiseShellCmdTemplate: ""
       satSetShellCmdTemplate: ""
     - id: 28654
@@ -46,7 +53,7 @@ sattrackclient:
       radioFrequency: 137.9125
       minElevation: 5.0
       stepSize: 1
-      rotatorEnabled: true
+      rotatorEnabled: false
       satRiseShellCmdTemplate: ""
       satSetShellCmdTemplate: ""
     - id: 33591
@@ -54,30 +61,7 @@ sattrackclient:
       radioFrequency: 137.1
       minElevation: 5.0
       stepSize: 1
-      rotatorEnabled: true
+      rotatorEnabled: false
       satRiseShellCmdTemplate: ""
       satSetShellCmdTemplate: ""
-    - id: 40069
-      name: "METEOR-M2"
-      radioFrequency: 137.1
-      minElevation: 5.0
-      stepSize: 1
-      rotatorEnabled: true
-      satRiseShellCmdTemplate: ""
-      satSetShellCmdTemplate: ""
-    - id: 44387
-      name: "METEOR-M2-2"
-      radioFrequency: 137.1
-      minElevation: 5.0
-      stepSize: 1
-      rotatorEnabled: true
-      satRiseShellCmdTemplate: ""
-      satSetShellCmdTemplate: ""
-    - id: 98067A
-      name: "ISS"
-      radioFrequency: 137.1
-      minElevation: 5.0
-      stepSize: 1
-      rotatorEnabled: true
-      satRiseShellCmdTemplate: ""
-      satSetShellCmdTemplate: ""
+
