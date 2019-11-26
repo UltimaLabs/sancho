@@ -4,6 +4,6 @@
 - name: Reload systemd unit files
   command: /bin/systemctl daemon-reload
 
-- name: Restart sattrackclient service
-  service: name=sattrackclient state=restarted
+- name: Restart sancho service
+  service: name=sancho state=restarted
 

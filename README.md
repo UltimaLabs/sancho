@@ -1,7 +1,7 @@
-# Satellite Tracking Client
+# Sancho, a satellite tracking client
 
-SatTrackClient uses [SatTrackAPI service](https://github.com/UltimaLabs/sattrackapi) for satellite tracking.
-This is a work in progress.
+Sancho uses [SatTrackAPI service](https://github.com/UltimaLabs/sattrackapi) for satellite tracking.
+The project is currently under development.
 
 ## Built With
 

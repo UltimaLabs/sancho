@@ -2,7 +2,7 @@ spring:
   main:
     webApplicationType: NONE
 
-sattrackclient:
+sancho:
 
   # enable/disable automatic scheduling
   # disable scheduler for unit testing

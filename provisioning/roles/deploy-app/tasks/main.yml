@@ -11,7 +11,7 @@
     owner: "{{ app_files_owner }}"
     group: "{{ app_files_group }}"
   notify:
-    - Restart sattrackclient service
+    - Restart sancho service
 
 - name: Create the current version symlink
   file:
@@ -21,7 +21,7 @@
     group: "{{ app_files_group }}"
     state: link
   notify:
-    - Restart sattrackclient service
+    - Restart sancho service
 
 - name: Delete old JARs
   script: delete_old_jars.sh {{ app_basedir }} {{ num_old_jars_to_keep }}
@@ -33,17 +33,17 @@
     owner: "{{ app_files_owner }}"
     group: "{{ app_files_group }}"
   notify:
-    - Restart sattrackclient service
+    - Restart sancho service
 
 - name: Copy the systemd service unit
   template:
-    src: sattrackclient.service.j2
-    dest: /etc/systemd/system/sattrackclient.service
+    src: sancho.service.j2
+    dest: /etc/systemd/system/sancho.service
     owner: root
     group: root
   notify:
     - Reload systemd unit files
-    - Restart sattrackclient service
+    - Restart sancho service
 
-- name: sattrackclient service must be started and enabled on boot
-  service: name=sattrackclient state=started enabled=yes
+- name: sancho service must be started and enabled on boot
+  service: name=sancho state=started enabled=yes
