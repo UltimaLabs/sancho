@@ -104,15 +104,19 @@ public class PassDataToTrackingDataConverter {
         return AzimuthElevationUtil.normalizeAngle((int) Math.round(entry.getAz()));
     }
 
+    /**
+     * Azimuth/elevation flip
+     * <p>
+     * If the flip is enabled, rotates azimuth by 180 degrees and sets the elevation
+     * at 180 - original elevation.
+     *
+     * @param dataPoint pass event data point
+     * @param flip      should we perform the flip
+     * @return azimuth/elevation object converted from pass event data point
+     */
     private static AzimuthElevation flipConversion(PassEventDataPoint dataPoint, boolean flip) {
 
         if (flip) {
-            log.info("Flip: ({}, {}) -> ({}, {})",
-                    dataPoint.getAz(),
-                    dataPoint.getEl(),
-                    dataPoint.getAz() + 180,
-                    180 - dataPoint.getEl()
-            );
             return new AzimuthElevation(dataPoint.getAz() + 180, 180 - dataPoint.getEl());
         }
 
