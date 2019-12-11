@@ -43,24 +43,24 @@ sancho:
       name: "NOAA15"
       radioFrequency: 137.62
       minElevation: 5.0
-      stepSize: 1
+      stepSize: 0
       rotatorEnabled: false
-      satRiseShellCmdTemplate: ""
+      satRiseShellCmdTemplate: "/opt/ultima/apt-receive/capture.sh '${tle}' ${satId} ${satName} ${radioFrequency} ${predictTime} ${rise} ${set} ${duration}"
       satSetShellCmdTemplate: ""
     - id: 28654
       name: "NOAA18"
       radioFrequency: 137.9125
       minElevation: 5.0
-      stepSize: 1
+      stepSize: 0
       rotatorEnabled: false
-      satRiseShellCmdTemplate: ""
+      satRiseShellCmdTemplate: "/opt/ultima/apt-receive/capture.sh '${tle}' ${satId} ${satName} ${radioFrequency} ${predictTime} ${rise} ${set} ${duration}"
       satSetShellCmdTemplate: ""
     - id: 33591
       name: "NOAA19"
       radioFrequency: 137.1
       minElevation: 5.0
-      stepSize: 1
+      stepSize: 0
       rotatorEnabled: false
-      satRiseShellCmdTemplate: ""
+      satRiseShellCmdTemplate: "/opt/ultima/apt-receive/capture.sh '${tle}' ${satId} ${satName} ${radioFrequency} ${predictTime} ${rise} ${set} ${duration}"
       satSetShellCmdTemplate: ""
 
