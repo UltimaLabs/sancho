@@ -1,6 +1,5 @@
 package com.ultimalabs.sancho.rotctldclient.util;
 
-import com.ultimalabs.sancho.rotctldclient.model.AzimuthElevation;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 

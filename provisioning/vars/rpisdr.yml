@@ -14,7 +14,7 @@ systemd_unit_after: network.target
 systemd_service_type: simple
 systemd_service_user: ultima
 systemd_service_group: ultima
-systemd_service_exec_start: /usr/bin/java -Xms32m -Xmx64m -jar /opt/ultima/sancho/sancho-current.jar
+systemd_service_exec_start: /usr/bin/java -XX:-UsePerfData -Xms32m -Xmx64m -jar /opt/ultima/sancho/sancho-current.jar
 systemd_service_restart: always
 
 systemd_install_wanted_by: multi-user.target
