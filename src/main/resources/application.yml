@@ -30,7 +30,7 @@ sancho:
   # satellites we're tracking
 
   # You can use the following placeholders in shell cmd templates:
-  # ${tle} - string (multiline)
+  # ${tle} - string (note that newline is passed as literal '\n')
   # ${satId} - string
   # ${satName} - string
   # ${radioFrequency} - double [MHz]
@@ -43,47 +43,23 @@ sancho:
       name: "NOAA15"
       radioFrequency: 137.62
       minElevation: 5.0
-      stepSize: 1
-      rotatorEnabled: true
-      satRiseShellCmdTemplate: ""
+      stepSize: 0
+      rotatorEnabled: false
+      satRiseShellCmdTemplate: "/opt/ultima/apt-receive/capture.sh '${tle}' ${satId} ${satName} ${radioFrequency} ${predictTime} ${rise} ${set} ${duration}"
       satSetShellCmdTemplate: ""
     - id: 28654
       name: "NOAA18"
       radioFrequency: 137.9125
       minElevation: 5.0
-      stepSize: 1
-      rotatorEnabled: true
-      satRiseShellCmdTemplate: ""
+      stepSize: 0
+      rotatorEnabled: false
+      satRiseShellCmdTemplate: "/opt/ultima/apt-receive/capture.sh '${tle}' ${satId} ${satName} ${radioFrequency} ${predictTime} ${rise} ${set} ${duration}"
       satSetShellCmdTemplate: ""
     - id: 33591
       name: "NOAA19"
       radioFrequency: 137.1
       minElevation: 5.0
-      stepSize: 1
-      rotatorEnabled: true
-      satRiseShellCmdTemplate: ""
-      satSetShellCmdTemplate: ""
-    - id: 40069
-      name: "METEOR-M2"
-      radioFrequency: 137.1
-      minElevation: 5.0
-      stepSize: 1
-      rotatorEnabled: true
-      satRiseShellCmdTemplate: ""
-      satSetShellCmdTemplate: ""
-    - id: 44387
-      name: "METEOR-M2-2"
-      radioFrequency: 137.1
-      minElevation: 5.0
-      stepSize: 1
-      rotatorEnabled: true
-      satRiseShellCmdTemplate: ""
-      satSetShellCmdTemplate: ""
-    - id: 98067A
-      name: "ISS"
-      radioFrequency: 137.1
-      minElevation: 5.0
-      stepSize: 1
-      rotatorEnabled: true
-      satRiseShellCmdTemplate: ""
+      stepSize: 0
+      rotatorEnabled: false
+      satRiseShellCmdTemplate: "/opt/ultima/apt-receive/capture.sh '${tle}' ${satId} ${satName} ${radioFrequency} ${predictTime} ${rise} ${set} ${duration}"
       satSetShellCmdTemplate: ""
