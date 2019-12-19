@@ -43,6 +43,7 @@ sancho:
       name: "NOAA15"
       radioFrequency: 137.62
       minElevation: 10.0
+      trackingElevationThreshold: 10.0
       stepSize: 1
       rotatorEnabled: true
       satRiseShellCmdTemplate: ""
@@ -51,6 +52,7 @@ sancho:
       name: "NOAA18"
       radioFrequency: 137.9125
       minElevation: 10.0
+      trackingElevationThreshold: 10.0
       stepSize: 1
       rotatorEnabled: true
       satRiseShellCmdTemplate: ""
@@ -59,6 +61,7 @@ sancho:
       name: "NOAA19"
       radioFrequency: 137.1
       minElevation: 10.0
+      trackingElevationThreshold: 10.0
       stepSize: 1
       rotatorEnabled: true
       satRiseShellCmdTemplate: ""
@@ -67,6 +70,7 @@ sancho:
       name: "METEORM2"
       radioFrequency: 137.1
       minElevation: 10.0
+      trackingElevationThreshold: 10.0
       stepSize: 1
       rotatorEnabled: true
       satRiseShellCmdTemplate: ""
