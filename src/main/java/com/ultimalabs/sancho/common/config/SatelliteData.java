@@ -41,6 +41,13 @@ public class SatelliteData {
     private final double minElevation;
 
     /**
+     * Elevation threshold for tracking and shell cmd execution
+     */
+    @Min(value = 0, message = "Tracking elevation threshold should not be less than 0")
+    @Max(value = 90, message = "Tracking elevation threshold should not be greater than 90")
+    private final double trackingElevationThreshold;
+
+    /**
      * Tracking step size (duration n seconds), for use with rotators
      * <p>
      * Use zero to fetch only the basic pass data, without azimuth/elevation details.

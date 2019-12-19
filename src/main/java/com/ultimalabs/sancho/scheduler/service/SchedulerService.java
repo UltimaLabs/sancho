@@ -107,10 +107,19 @@ public class SchedulerService {
 
         Date trackerDate = passData.getRisePoint().getT();
         Date fetcherDate = passData.getSetPoint().getT();
+        double maxElevation = passData.getMidPoint().getEl();
+        double trackingElevationThreshold = passData.getSatelliteData().getTrackingElevationThreshold();
         boolean rotatorEnabled = passData.getSatelliteData().isRotatorEnabled();
         double stepSize = passData.getSatelliteData().getStepSize();
         String riseShellCmdSubstituted = passData.getSatelliteData().getSatRiseShellCmdSubstituted();
         String setShellCmdSubstituted = passData.getSatelliteData().getSatSetShellCmdSubstituted();
+
+        // skip tracking and command execution if the maximum elevation
+        // is below the tracking threshold
+        if (maxElevation < trackingElevationThreshold) {
+            log.info("Skipped tracking: maximum elevation ({}) below the tracking threshold ({}).", maxElevation, trackingElevationThreshold);
+            return true;
+        }
 
         // schedule tracking
         if (rotatorEnabled && stepSize != 0.0) {

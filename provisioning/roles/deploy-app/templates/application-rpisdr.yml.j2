@@ -42,7 +42,8 @@ sancho:
     - id: 25338
       name: "NOAA15"
       radioFrequency: 137.62
-      minElevation: 20.0
+      minElevation: 18.0
+      trackingElevationThreshold: 35.0
       stepSize: 0
       rotatorEnabled: false
       satRiseShellCmdTemplate: "/opt/ultima/apt-receive/capture.sh '${tle}' ${satId} ${satName} ${radioFrequency} ${predictTime} ${rise} ${set} ${duration}"
@@ -50,7 +51,8 @@ sancho:
     - id: 28654
       name: "NOAA18"
       radioFrequency: 137.9125
-      minElevation: 20.0
+      minElevation: 18.0
+      trackingElevationThreshold: 35.0
       stepSize: 0
       rotatorEnabled: false
       satRiseShellCmdTemplate: "/opt/ultima/apt-receive/capture.sh '${tle}' ${satId} ${satName} ${radioFrequency} ${predictTime} ${rise} ${set} ${duration}"
@@ -58,9 +60,9 @@ sancho:
     - id: 33591
       name: "NOAA19"
       radioFrequency: 137.1
-      minElevation: 20.0
+      minElevation: 18.0
+      trackingElevationThreshold: 35.0
       stepSize: 0
       rotatorEnabled: false
       satRiseShellCmdTemplate: "/opt/ultima/apt-receive/capture.sh '${tle}' ${satId} ${satName} ${radioFrequency} ${predictTime} ${rise} ${set} ${duration}"
       satSetShellCmdTemplate: ""
-
