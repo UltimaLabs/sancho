@@ -1,5 +1,7 @@
 spring:
   main:
+    # REST client dependencies are included by Spring Boot, which also provide a web server.
+    # Here we disable starting an embedded web server.
     webApplicationType: NONE
 
 sancho:
@@ -9,8 +11,8 @@ sancho:
   schedulerAutoStartDisabled: false
 
   # how long do we wait in case of error
-  # while scheduling next event
-  schedulerErrorWait: 180 # seconds
+  # while scheduling next event, in seconds
+  schedulerErrorWait: 180
 
   # SatTrackAPI base URL
   satTrackApiUrl: https://sattrackapi.ultima.hr:8443/api/v1
@@ -22,10 +24,11 @@ sancho:
     longitude: 15.7484
     altitude: 380
 
+  # rotctld backend configuration
   rotator:
     rotctldHost: 127.0.0.1
     rotctldPort: 14533
-    stepSize: 0.25 # seconds
+    stepSize: 0.25 # how often do we update the rotator position, in seconds; 0.25 is a sensible default
 
   # satellites we're tracking
 
@@ -51,15 +54,6 @@ sancho:
     - id: 28654
       name: "NOAA18"
       radioFrequency: 137.9125
-      minElevation: 20.0
-      trackingElevationThreshold: 35.0
-      stepSize: 0
-      rotatorEnabled: false
-      satRiseShellCmdTemplate: "/opt/ultima/apt-receive/capture.sh '${tle}' ${satId} ${satName} ${radioFrequency} ${predictTime} ${rise} ${set} ${duration}"
-      satSetShellCmdTemplate: ""
-    - id: 33591
-      name: "NOAA19"
-      radioFrequency: 137.1
       minElevation: 20.0
       trackingElevationThreshold: 35.0
       stepSize: 0
