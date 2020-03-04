@@ -48,7 +48,7 @@ java -jar build/libs/sancho-0.1.1-1.jar
 
 By default, the application log is output to `stdout`.
 
-### Deploy using Ansible
+## Deploy using Ansible
 
 You can deploy Sancho as a `systemd` service using Ansible. Edit the following files to match your needs:
 
@@ -60,7 +60,7 @@ After tweaking the configuration, run the shell script located in the `provision
 
 Deploy script keeps several old JAR versions on a host. You can control this number through `num_old_jars_to_keep` Ansible variable (defined in `provisioning/vars/*.yml` files). A symbolic link will point to the latest version after a successful deploy. In case of problems with the latest version, you can manually delete the symlink and create a new one, pointing to the last known stable version.   
 
-### Configuration
+## Configuration
 
 Local development application is configured by editing the `src/main/resources/application.yml` file. Edit `provisioning/roles/deploy-app/templates/application-*.yml.j2` for Ansible deploy, which will copy the `application.yml` to the same folder containing an executable JAR. Configuration is read at the application startup, so for the changes to become active, you need to restart the application.
 
@@ -72,6 +72,10 @@ Comments in `src/main/resources/application.yml` explain most options. Some dese
   - `sancho.satelliteData[].stepSize` - step size for the data fetched from the SatTrackAPI service, in seconds. This value controls how many data points for a satellite pass the API returns. 0.5 is a sensible default for tracking. If this value is zero, tracking will be disabled, regardless of the `rotatorEnabled` setting. 
   - `sancho.satelliteData[].rotatorEnabled` - is rotator enabled? See also `stepSize`. If rotator is enabled and there's an error communicating with it through `rotctld`, tracking will not be scheduled. Instead, Sancho will wait `schedulerErrorWait` seconds before restarting data fetch/scheduling.
 
-### Rotator notes
+## Rotator notes
 
 Sancho has been tested with Yaesu G-5500 rotator / EA4TX ARS-USB interface. 
+
+### Parking
+
+Immediately after Sancho finishes tracking a satellite, it will fetch next pass data and turn the rotator in the direction of the next pass rise. 
