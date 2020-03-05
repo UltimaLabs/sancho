@@ -74,10 +74,10 @@ Comments in `src/main/resources/application.yml` explain most options. Some dese
 
 ## Rotator notes
 
- - Sancho has been tested with Yaesu G-5500 rotator / EA4TX ARS-USB interface connected to Raspberry Pi 4 running Raspbian Buster and PC running CentOS 7. 
- - After receiving the data from *SatTrackAPI*, Sancho will convert it into a format suitable for tracking. It will detect and correct the "meridian flip" problem - when the satellite passes through az = 0° (either E => W or W => E), G-5500 will make an almost 360° turn in the opposite direction, causing a signal loss. With this type of pass, the software will transform the (az, el) coordinates: `az = original_az + 180, el = 180 - orig_el`. All the transformed coordinates will be normalized to 0° - 359° range.
- - This strategy won't work for other rotators with "meridian flip" problem when the satellite passes through az = 180° or if they support max 90° elevation. 
- - There's no transformation for high elevation passes, with max elevation greater than circa 80°, where signal loss could also be possible due to rapid azimuth change.
+ - Sancho has been tested with Yaesu G-5500 rotator / EA4TX ARS-USB interface connected to Raspberry Pi 4 running Raspbian Buster and a PC running CentOS 7. 
+ - After receiving the data from *SatTrackAPI*, Sancho will convert it into a format suitable for tracking. It will detect and correct the "meridian flip" problem - when the satellite passes through az = 0° (either E => W or W => E), G-5500 will make an almost 360° turn in the opposite direction, causing a signal loss. With this type of pass, the software will transform tracking coordinates: `az = original_az + 180, el = 180 - original_el`. All tracking coordinates are normalized to 0° - 359° range.
+ - This strategy won't work for rotators with "meridian flip" problem when the satellite passes through az = 180° or if they support max 90° elevation. 
+ - There's no transformation for high elevation passes, with max elevation greater than circa 80°, where signal loss is possible due to rapid azimuth change.
 
 ### Parking
 
