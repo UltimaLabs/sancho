@@ -1,7 +1,7 @@
 # Sancho, a satellite tracking client
 
-Sancho can track multiple satellites using the data provided by [SatTrackAPI service](https://github.com/UltimaLabs/sattrackapi). It will fetch next pass data and schedule shell command execution at satellite rise/set time and/or drive a rotator through `rotctld`, a Hamlib TCP rotator control daemon.
-It is designed to run unattended as a system service. Sancho has been tested on Raspberry Pi 4 running Raspbian Buster and PC running CentOS 7. The only required input is a textual config file. Please see *Configuration* section for details.
+Sancho can track multiple satellites using the data provided by [SatTrackAPI service](https://github.com/UltimaLabs/sattrackapi). It will fetch next pass data and schedule shell command execution at satellite rise/set time and/or drive a rotator through `rotctld`, a *Hamlib* TCP rotator control daemon.
+It is designed to run unattended as a system service. The only required input is a textual config file. Please see *Configuration* section for details.
 
 ## Built With
 
@@ -68,13 +68,16 @@ Comments in `src/main/resources/application.yml` explain most options. Some dese
 
   - `sancho.rotator.stepSize` - specifies how often the software should update rotator position, in seconds. 0.25 is a sensible default here. More often and you're just wasting CPU cycles. Up to one second is probably ok. More than a second might lead to longer rotator travel and possible signal loss.
   - `sancho.satelliteData[].minElevation` - a minimum elevation for tracking. Passes with elevation below this limit will not be scheduled for tracking. The tracking starts when satellite rises above `minElevation` and stops when it sets below this value.
-  - `sancho.satelliteData[].trackingElevationThreshold` - maximum elevation of a pass needs to be above this threshold in order for the pass to be scheduled for tracking. For example, with `minElevation = 20` and `trackingElevationThreshold = 45`, the pass will be tracked when satellite rises above 20 degrees elevation up until it sets below 20 degrees, only if the maximum elevation is equal to or greater than 45 degrees.
+  - `sancho.satelliteData[].trackingElevationThreshold` - schedule pass tracking only if its maximum elevation exceeds this threshold. For example, with `minElevation = 20` and `trackingElevationThreshold = 45`, the pass will be tracked when satellite rises above 20 degrees elevation up until it sets below 20 degrees, only if the maximum elevation is equal to or greater than 45 degrees.
   - `sancho.satelliteData[].stepSize` - step size for the data fetched from the SatTrackAPI service, in seconds. This value controls how many data points for a satellite pass the API returns. 0.5 is a sensible default for tracking. If this value is zero, tracking will be disabled, regardless of the `rotatorEnabled` setting. 
   - `sancho.satelliteData[].rotatorEnabled` - is rotator enabled? See also `stepSize`. If rotator is enabled and there's an error communicating with it through `rotctld`, tracking will not be scheduled. Instead, Sancho will wait `schedulerErrorWait` seconds before restarting data fetch/scheduling.
 
 ## Rotator notes
 
-Sancho has been tested with Yaesu G-5500 rotator / EA4TX ARS-USB interface. 
+ - Sancho has been tested with Yaesu G-5500 rotator / EA4TX ARS-USB interface connected to Raspberry Pi 4 running Raspbian Buster and PC running CentOS 7. 
+ - After receiving the data from *SatTrackAPI*, Sancho will convert it into a format suitable for tracking. It will detect and correct the "meridian flip" problem - when the satellite passes through az = 0° (either E => W or W => E), G-5500 will make an almost 360° turn in the opposite direction, causing a signal loss. With this type of pass, the software will transform the (az, el) coordinates: `az = original_az + 180, el = 180 - orig_el`. All the transformed coordinates will be normalized to 0° - 359° range.
+ - This strategy won't work for other rotators with "meridian flip" problem when the satellite passes through az = 180° or if they support max 90° elevation. 
+ - There's no transformation for high elevation passes, with max elevation greater than circa 80°, where signal loss could also be possible due to rapid azimuth change.
 
 ### Parking
 
