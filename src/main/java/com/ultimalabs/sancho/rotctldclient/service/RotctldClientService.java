@@ -60,7 +60,7 @@ public class RotctldClientService {
      */
     public void track(TrackingData trackingData) {
 
-        int sleepDuration = (int) config.getRotator().getStepSize() * 1000;
+        int sleepDuration = (int) (config.getRotator().getStepSize() * 1000);
 
         startConnection();
 
