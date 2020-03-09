@@ -1,13 +1,13 @@
 #!/usr/bin/env ansible-playbook
 ---
 - name: Sancho - deploy as a systemd service
-  hosts: rotrpi
+  hosts: fersat1
   become: True
   become_user: root
   become_method: sudo
 
   vars_files:
-    - vars/rotrpi.yml
+    - vars/fersat.yml
 
   roles:
     - { role: deploy-app }

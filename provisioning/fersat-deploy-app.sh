@@ -16,4 +16,4 @@ export JAR_FILE
 
 # RUN THE ANSIBLE PLAYBOOK
 cd provisioning || exit 1
-./playbook-rotrpi-deploy-app.yml --extra-vars "app_jar_file=$JAR_FILE"
+./playbook-fersat-deploy-app.yml --extra-vars "app_jar_file=$JAR_FILE"

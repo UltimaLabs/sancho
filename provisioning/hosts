@@ -1,2 +1,2 @@
-[rpisdr]
-rpi4sdr ansible_ssh_host=localhost ansible_ssh_port=2016 ansible_ssh_user=pi
+[fersat]
+fersat1 ansible_ssh_host=10.8.19.1 ansible_ssh_port=22 ansible_ssh_user=ansible
