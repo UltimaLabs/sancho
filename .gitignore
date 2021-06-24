@@ -6,7 +6,7 @@ build/
 !**/src/test/**
 provisioning/roles/deploy-app/files/*.jar
 provisioning/*.retry
-
+bin/
 
 ### STS ###
 .apt_generated
