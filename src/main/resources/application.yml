@@ -1,8 +1,8 @@
-spring:
-  main:
-    # REST client dependencies are included by Spring Boot, which also provide a web server.
-    # Here we disable starting an embedded web server.
-    webApplicationType: NONE
+server:
+  port: 8002
+  forward-headers-strategy: FRAMEWORK
+  error:
+    includeStacktrace: never
 
 sancho:
 
@@ -49,14 +49,5 @@ sancho:
       trackingElevationThreshold: 35.0
       stepSize: 0
       rotatorEnabled: false
-      satRiseShellCmdTemplate: "/opt/ultima/apt-receive/capture.sh '${tle}' ${satId} ${satName} ${radioFrequency} ${predictTime} ${rise} ${set} ${duration}"
-      satSetShellCmdTemplate: ""
-    - id: 28654
-      name: "NOAA18"
-      radioFrequency: 137.9125
-      minElevation: 20.0
-      trackingElevationThreshold: 35.0
-      stepSize: 0
-      rotatorEnabled: false
-      satRiseShellCmdTemplate: "/opt/ultima/apt-receive/capture.sh '${tle}' ${satId} ${satName} ${radioFrequency} ${predictTime} ${rise} ${set} ${duration}"
+      satRiseShellCmdTemplate: ""
       satSetShellCmdTemplate: ""
