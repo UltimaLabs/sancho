@@ -57,8 +57,14 @@ public class SatelliteData {
     /**
      * Whether the rotator is used with this satellite
      */
-    @NotNull(message = "Please specify useRotator as a boolean value")
+    @NotNull(message = "Please specify rotatorEnabled as a boolean value")
     private final boolean rotatorEnabled;
+
+    /**
+     * Whether the radio transciever control is used with this satellite
+     */
+    @NotNull(message = "Please specify radioControlEnabled as a boolean value")
+    private final boolean radioControlEnabled;
 
     /**
      * Template for the shell command executed at satellite rise time

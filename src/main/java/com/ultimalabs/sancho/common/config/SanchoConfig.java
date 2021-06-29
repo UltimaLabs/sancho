@@ -7,6 +7,7 @@ import org.springframework.validation.annotation.Validated;
 
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.util.List;
 
@@ -49,9 +50,16 @@ public class SanchoConfig {
     private final RotatorConfig rotator;
 
     /**
+     * Radio transceiver control config
+     */
+    @NotNull(message = "Radio transceiver control config should not be empty")
+    private final RadioConfig radio;
+
+    /**
      * List of satellites we're tracking
      */
-    @NotNull(message = "Satellite details should not be empty")
+    @NotNull(message = "Satellite details should not be null")
+    @NotEmpty(message = "Satellite details should not be empty")
     private final List<SatelliteData> satelliteData;
 
 }

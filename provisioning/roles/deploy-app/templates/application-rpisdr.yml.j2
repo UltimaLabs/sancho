@@ -27,6 +27,11 @@ sancho:
     rotctldPort: 4533
     stepSize: 0.25 # seconds
 
+  radio:
+    rigctldHost: 127.0.0.1
+    rigctldPort: 4532
+    stepSize: 0.25 # seconds
+
   # satellites we're tracking
 
   # You can use the following placeholders in shell cmd templates:
@@ -46,6 +51,7 @@ sancho:
       trackingElevationThreshold: 35.0
       stepSize: 0
       rotatorEnabled: false
+      radioControlEnabled: false
       satRiseShellCmdTemplate: "/opt/ultima/apt-receive/capture.sh '${tle}' ${satId} ${satName} ${radioFrequency} ${predictTime} ${rise} ${set} ${duration}"
       satSetShellCmdTemplate: ""
     - id: 28654
@@ -55,6 +61,7 @@ sancho:
       trackingElevationThreshold: 35.0
       stepSize: 0
       rotatorEnabled: false
+      radioControlEnabled: false
       satRiseShellCmdTemplate: "/opt/ultima/apt-receive/capture.sh '${tle}' ${satId} ${satName} ${radioFrequency} ${predictTime} ${rise} ${set} ${duration}"
       satSetShellCmdTemplate: ""
     - id: 33591
@@ -64,5 +71,6 @@ sancho:
       trackingElevationThreshold: 35.0
       stepSize: 0
       rotatorEnabled: false
+      radioControlEnabled: false
       satRiseShellCmdTemplate: "/opt/ultima/apt-receive/capture.sh '${tle}' ${satId} ${satName} ${radioFrequency} ${predictTime} ${rise} ${set} ${duration}"
       satSetShellCmdTemplate: ""

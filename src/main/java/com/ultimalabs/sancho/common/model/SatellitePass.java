@@ -2,7 +2,6 @@ package com.ultimalabs.sancho.common.model;
 
 import com.ultimalabs.sancho.common.config.SatelliteData;
 import lombok.Data;
-import lombok.extern.slf4j.Slf4j;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -11,7 +10,6 @@ import java.util.List;
 /**
  * Event data for a satellite pass
  */
-@Slf4j
 @Data
 public class SatellitePass implements Serializable, Comparable<SatellitePass> {
 

@@ -30,6 +30,11 @@ sancho:
     rotctldPort: 14533
     stepSize: 0.25 # how often do we update the rotator position, in seconds; 0.25 is a sensible default
 
+  # rigctld backend configuration
+  radio:
+    rigctldHost: 127.0.0.1
+    rigctldPort: 14532
+
   # satellites we're tracking
 
   # You can use the following placeholders in shell cmd templates:
@@ -49,5 +54,6 @@ sancho:
       trackingElevationThreshold: 35.0
       stepSize: 0
       rotatorEnabled: false
+      radioControlEnabled: false
       satRiseShellCmdTemplate: ""
       satSetShellCmdTemplate: ""
