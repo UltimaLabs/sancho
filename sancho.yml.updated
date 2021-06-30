@@ -1,0 +1,53 @@
+---
+server:
+  port: 8002
+  forwardHeadersStrategy: "FRAMEWORK"
+  error:
+    path: "/error"
+    includeException: false
+    includeStacktrace: "NEVER"
+    includeMessage: "ALWAYS"
+    includeBindingErrors: "ALWAYS"
+    whitelabel:
+      enabled: true
+sancho:
+  schedulerAutoStartDisabled: true
+  schedulerErrorWait: 175
+  satTrackApiUrl: "https://sattrackapi.ultima.hr:8443/api/v1"
+  station:
+    name: "Test station"
+    latitude: 1.0
+    longitude: 1.0
+    altitude: 1
+  rotator:
+    rotctldHost: "127.0.0.1"
+    rotctldPort: 4533
+    stepSize: 0.25
+  radio:
+    rigctldHost: "127.0.0.1"
+    rigctldPort: 4532
+  satelliteData:
+  - id: "25338"
+    name: "NOAA15"
+    radioFrequency: 137.62
+    minElevation: 10.0
+    trackingElevationThreshold: 10.0
+    stepSize: 1.0
+    rotatorEnabled: false
+    radioControlEnabled: false
+    satRiseShellCmdTemplate: ""
+    satSetShellCmdTemplate: ""
+    satRiseShellCmdSubstituted: null
+    satSetShellCmdSubstituted: null
+  - id: "28654"
+    name: "NOAA18"
+    radioFrequency: 137.9125
+    minElevation: 10.0
+    trackingElevationThreshold: 10.0
+    stepSize: 1.0
+    rotatorEnabled: false
+    radioControlEnabled: false
+    satRiseShellCmdTemplate: ""
+    satSetShellCmdTemplate: ""
+    satRiseShellCmdSubstituted: null
+    satSetShellCmdSubstituted: null

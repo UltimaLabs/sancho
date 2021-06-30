@@ -1,6 +1,8 @@
-spring:
-  main:
-    webApplicationType: NONE
+server:
+  port: 8002
+  forward-headers-strategy: FRAMEWORK
+  error:
+    includeStacktrace: never
 
 sancho:
 

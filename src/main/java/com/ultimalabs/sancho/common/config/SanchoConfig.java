@@ -12,19 +12,19 @@ import javax.validation.constraints.NotNull;
 import java.util.List;
 
 /**
- * Configuration loaded from appplication.yml
+ * Configuration loaded from sancho.yml
  */
 @Data
 @Validated
 @ConstructorBinding
-@ConfigurationProperties("sancho")
+@ConfigurationProperties
 public class SanchoConfig {
 
     /**
      * Enable/disable automatic scheduling
      */
     private final boolean schedulerAutoStartDisabled;
-
+    
     /**
      * How long do we wait until retry after scheduler error (seconds)
      */

@@ -6,6 +6,7 @@ import com.ultimalabs.sancho.api.config.model.ConfigUpdateResponse;
 import com.ultimalabs.sancho.api.config.service.ConfigService;
 import com.ultimalabs.sancho.common.config.SanchoConfig;
 
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -22,6 +23,15 @@ import lombok.RequiredArgsConstructor;
 public class ConfigController {
 
     private final ConfigService configService;
+
+    /**
+     * Get current config
+     * @return current Sancho config
+     */
+    @GetMapping(value = "/", produces = "application/json")
+    public SanchoConfig getConfig() {
+        return configService.getSanchoConfig();
+    }
 
     /**
      * Update config

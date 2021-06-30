@@ -1,7 +1,5 @@
 package com.ultimalabs.sancho.api.config.controller;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,53 +28,55 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 @AutoConfigureMockMvc
 public class ConfigTest {
 
-    @Autowired
-    private ObjectMapper objectMapper;
+        @Autowired
+        private ObjectMapper objectMapper;
 
-    @Autowired
-    private MockMvc mockMvc;
+        @Autowired
+        private MockMvc mockMvc;
 
-    private SanchoConfig sanchoConfigOk;
-    private SanchoConfig sanchoConfigNotOk;
+        private SanchoConfig sanchoConfigOk;
+        private SanchoConfig sanchoConfigNotOk;
 
-    public ConfigTest() {
+        public ConfigTest() {
 
-        StationDetails stationDetails = new StationDetails("Test station", 1.0, 1.0, 1);
-        RotatorConfig rotatorConfig = new RotatorConfig("127.0.0.1", 4533, 0.25);
-        RadioConfig radioConfig = new RadioConfig("127.0.0.1", 4532);
+                StationDetails stationDetails = new StationDetails("Test station", 1.0, 1.0, 1);
+                RotatorConfig rotatorConfig = new RotatorConfig("127.0.0.1", 4533, 0.25);
+                RadioConfig radioConfig = new RadioConfig("127.0.0.1", 4532);
 
-        SatelliteData sat1 = new SatelliteData("25338", "NOAA15", 137.62, 10.0, 10.0, 1, false, false, "", "");
-        SatelliteData sat2 = new SatelliteData("28654", "NOAA18", 137.9125, 10.0, 10.0, 1, false, false, "", "");
+                SatelliteData sat1 = new SatelliteData("25338", "NOAA15", 137.62, 10.0, 10.0, 1, false, false, "", "");
+                SatelliteData sat2 = new SatelliteData("28654", "NOAA18", 137.9125, 10.0, 10.0, 1, false, false, "",
+                                "");
 
-        List<SatelliteData> emptySatsList = new ArrayList<>();
+                List<SatelliteData> emptySatsList = new ArrayList<>();
 
-        List<SatelliteData> satellites = new ArrayList<>();
-        satellites.add(sat1);
-        satellites.add(sat2);
+                List<SatelliteData> satellites = new ArrayList<>();
+                satellites.add(sat1);
+                satellites.add(sat2);
 
-        sanchoConfigOk = new SanchoConfig(true, 180, "https://sattrackapi.ultima.hr:8443/api/v1", stationDetails,
-                rotatorConfig, radioConfig, satellites);
-        sanchoConfigNotOk = new SanchoConfig(true, 180, "https://sattrackapi.ultima.hr:8443/api/v1", stationDetails,
-                rotatorConfig, radioConfig, emptySatsList);
+                sanchoConfigOk = new SanchoConfig(true, 180, "https://sattrackapi.ultima.hr:8443/api/v1",
+                                stationDetails, rotatorConfig, radioConfig, satellites);
+                sanchoConfigNotOk = new SanchoConfig(true, 180, "https://sattrackapi.ultima.hr:8443/api/v1",
+                                stationDetails, rotatorConfig, radioConfig, emptySatsList);
 
-    }
+        }
 
-    @DisplayName("Submit valid Sancho config")
-    @Test
-    void testUpdateConfigOk() throws Exception {
-        this.mockMvc
-                .perform(MockMvcRequestBuilders.post("/api/v1/config/").contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(sanchoConfigOk)))
-                .andExpect(MockMvcResultMatchers.status().isOk());
-    }
+        @DisplayName("Submit valid Sancho config")
+        @Test
+        void testUpdateConfigOk() throws Exception {
 
-    @DisplayName("Submit invalid Sancho config")
-    @Test
-    void testUpdateConfigNotOk() throws Exception {
-        this.mockMvc
-                .perform(MockMvcRequestBuilders.post("/api/v1/config/").contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(sanchoConfigNotOk)))
-                .andExpect(MockMvcResultMatchers.status().isBadRequest());
-    }
+                this.mockMvc.perform(
+                                MockMvcRequestBuilders.post("/api/v1/config/").contentType(MediaType.APPLICATION_JSON)
+                                                .content(objectMapper.writeValueAsString(sanchoConfigOk)))
+                                .andExpect(MockMvcResultMatchers.status().isOk());
+        }
+
+        @DisplayName("Submit invalid Sancho config")
+        @Test
+        void testUpdateConfigNotOk() throws Exception {
+                this.mockMvc.perform(
+                                MockMvcRequestBuilders.post("/api/v1/config/").contentType(MediaType.APPLICATION_JSON)
+                                                .content(objectMapper.writeValueAsString(sanchoConfigNotOk)))
+                                .andExpect(MockMvcResultMatchers.status().isBadRequest());
+        }
 
 }
