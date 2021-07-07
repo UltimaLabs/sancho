@@ -16,16 +16,18 @@ public class StatusServiceImpl implements StatusService {
 
     private final SchedulerService schedulerService;
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public List<String> getScheduledTasks() 
-    {
+    public List<String> getScheduledTasks() {
         List<String> listOfTasks = new ArrayList<>();
 
-        for (ScheduledTaskDetails taskDetails : schedulerService.getTaskList()) {
+        for (ScheduledTaskDetails taskDetails : schedulerService.getScheduledTasks()) {
             listOfTasks.add(taskDetails.getStartTime().toString() + " - " + taskDetails.getDescription());
         }
 
         return listOfTasks;
-        
-    }    
+
+    }
 }

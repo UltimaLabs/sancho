@@ -5,7 +5,16 @@ import lombok.Data;
 @Data
 public class ConfigUpdateResponse {
 
-    private final ConfigUpdateStatus status;
+    /**
+     * Status of config update
+     */
+    public enum UpdateStatus {
+
+        OK, ERROR
+
+    }
+
+    private final UpdateStatus status;
     private final String comment;
-    
+
 }

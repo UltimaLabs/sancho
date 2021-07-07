@@ -8,6 +8,8 @@ import com.ultimalabs.sancho.rotctldclient.service.RotctldClientService;
 import com.ultimalabs.sancho.rotctldclient.util.PassDataToTrackingDataConverter;
 import com.ultimalabs.sancho.scheduler.model.ScheduledTaskDetails;
 import com.ultimalabs.sancho.scheduler.runnables.FetcherTask;
+import com.ultimalabs.sancho.scheduler.runnables.ScheduledTasksCleanupTask;
+import com.ultimalabs.sancho.scheduler.runnables.SchedulerReloadTask;
 import com.ultimalabs.sancho.scheduler.runnables.ShellCmdTask;
 import com.ultimalabs.sancho.scheduler.runnables.TrackerTask;
 import com.ultimalabs.sancho.shellexec.service.ShellExecService;
@@ -27,7 +29,7 @@ import java.util.List;
 import java.util.concurrent.ScheduledFuture;
 
 /**
- * Fetches next pass data and schedules its tracking
+ * Tracking scheduler
  */
 @Slf4j
 @Service
@@ -55,7 +57,7 @@ public class SchedulerService {
     private final RotctldClientService rotctldClientService;
 
     /**
-     * Reference to a task scheduler
+     * Reference to the task scheduler
      */
     private final ThreadPoolTaskScheduler taskScheduler;
 
@@ -63,15 +65,16 @@ public class SchedulerService {
      * List of scheduled tasks
      */
     @Getter
-    private List<ScheduledTaskDetails> taskList;
+    private List<ScheduledTaskDetails> scheduledTasks;
 
     /**
      * Scheduling autostart
      */
     @PostConstruct
-    public void autoStartScheduler() {
+    private void autoStartScheduler() {
 
-        taskList = new ArrayList<>();
+        scheduledTasks = new ArrayList<>();
+        taskScheduler.execute(new ScheduledTasksCleanupTask(this));
 
         if (config.isSchedulerAutoStartDisabled()) {
             return;
@@ -112,7 +115,7 @@ public class SchedulerService {
 
     /**
      * Schedules tracking
-     * <p>
+     * 
      * Tracking starts at the next pass rise time.
      *
      * @param passData pass data
@@ -132,7 +135,8 @@ public class SchedulerService {
         // skip tracking and command execution if the maximum elevation
         // is below the tracking threshold
         if (maxElevation < trackingElevationThreshold) {
-            log.info("Skipped tracking: maximum elevation ({}) below the tracking threshold ({}).", maxElevation, trackingElevationThreshold);
+            log.info("Skipped tracking: maximum elevation ({}) below the tracking threshold ({}).", maxElevation,
+                    trackingElevationThreshold);
             return true;
         }
 
@@ -144,30 +148,30 @@ public class SchedulerService {
 
             // park the rotator in the starting position
             boolean parkOk = rotctldClientService.parkRotator(trackingData.getRiseAzimuthElevation());
-            
-            // TODO replace with: if (parkOk)
-            if (true) {
+
+            if (parkOk) {
                 // schedule tracker task
-                scheduleTask(new TrackerTask(rotctldClientService, trackingData), trackerDate, "Tracking " + passData.getSatelliteData().getName() + " until " + fetcherDate);
-                log.info("Scheduled tracking: {}, {} - {}",
-                        passData.getSatelliteData().getName(), trackerDate, passData.getSetPoint().getT());
+                scheduleTask(new TrackerTask(rotctldClientService, trackingData), trackerDate,
+                        "Tracking " + passData.getSatelliteData().getName() + " until " + fetcherDate);
+                log.info("Scheduled tracking: {}, {} - {}", passData.getSatelliteData().getName(), trackerDate,
+                        passData.getSetPoint().getT());
             } else {
                 log.error("Tracking canceled due to parking error.");
                 return false;
             }
-        } else {
-            log.info("Tracking is not scheduled, rotatorEnabled = '{}', stepSize = '{}'", rotatorEnabled, stepSize);
         }
 
         // schedule rise-time shell cmd execution
         if (!riseShellCmdSubstituted.equals("")) {
-            scheduleTask(new ShellCmdTask(riseShellCmdSubstituted, shellExecService), trackerDate, "Rise-time command execution: " + riseShellCmdSubstituted);
+            scheduleTask(new ShellCmdTask(riseShellCmdSubstituted, shellExecService), trackerDate,
+                    "Rise-time command execution: " + riseShellCmdSubstituted);
             log.info("Scheduled rise-time cmd exec: {} at {}", riseShellCmdSubstituted, trackerDate);
         }
 
         // schedule set-time shell cmd execution
         if (!setShellCmdSubstituted.equals("")) {
-            scheduleTask(new ShellCmdTask(setShellCmdSubstituted, shellExecService), fetcherDate, "Set-time command execution: " + setShellCmdSubstituted);
+            scheduleTask(new ShellCmdTask(setShellCmdSubstituted, shellExecService), fetcherDate,
+                    "Set-time command execution: " + setShellCmdSubstituted);
             log.info("Scheduled set-time cmd exec: {} at {}", setShellCmdSubstituted, fetcherDate);
         }
 
@@ -176,34 +180,23 @@ public class SchedulerService {
     }
 
     /**
-     * Schedule a task for execution and add it to a task list
+     * Reload tracking scheduler - normally after the config update
+     */
+    public void reloadScheduler() {
+        taskScheduler.execute(new SchedulerReloadTask(taskScheduler, this));
+    }
+
+    /**
+     * Schedule a task for execution and add it to the task list
      * 
-     * @param task a task scheduled for execution
-     * @param startTime task start time
+     * @param task        a task scheduled for execution
+     * @param startTime   task start time
      * @param description task description
      */
     private void scheduleTask(Runnable task, Date startTime, String description) {
         ScheduledFuture<?> future = taskScheduler.schedule(task, startTime);
         ScheduledTaskDetails taskDetails = new ScheduledTaskDetails(future, description, startTime);
-        taskList.add(taskDetails);
+        scheduledTasks.add(taskDetails);
     }
-
-    /**
-     * Get a list of currently scheduled tasks
-     * 
-     * @return a list of tasks
-     */
-    public List<String> getTasks() {
-        
-        List<String> listOfTasks = new ArrayList<>();
-
-        for (ScheduledTaskDetails taskDetails : taskList) {
-            listOfTasks.add(taskDetails.getStartTime().toString() + " - " + taskDetails.getDescription());
-        }
-
-        return listOfTasks;
-
-    }
-
 
 }

@@ -6,12 +6,11 @@ import java.io.IOException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.ultimalabs.sancho.api.config.model.ConfigUpdateResponse;
-import com.ultimalabs.sancho.api.config.model.ConfigUpdateStatus;
 
 import com.ultimalabs.sancho.common.config.SanchoConfig;
+import com.ultimalabs.sancho.scheduler.service.SchedulerService;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
@@ -29,9 +28,9 @@ public class ConfigServiceImpl implements ConfigService {
     private SanchoConfig sanchoConfig;
 
     /**
-     * Reference to a task scheduler
+     * Reference to the SchedulerService
      */
-    private final ThreadPoolTaskScheduler taskScheduler;
+    private final SchedulerService schedulerService;
 
     /**
      * {@inheritDoc}
@@ -45,15 +44,16 @@ public class ConfigServiceImpl implements ConfigService {
             mapper.writeValue(new File("sancho.yml"), newSanchoConfig);
         } catch (IOException e) {
             log.error("There was an error saving application config: {}", e.getMessage());
-            return new ConfigUpdateResponse(ConfigUpdateStatus.ERROR, e.getMessage());
+            return new ConfigUpdateResponse(ConfigUpdateResponse.UpdateStatus.ERROR, e.getMessage());
         }
 
         this.sanchoConfig = newSanchoConfig;
-        
-        // TODO restart scheduler
-        
+
+        // reload scheduler
+        schedulerService.reloadScheduler();
+
         log.info("Config file updated via API");
-        return new ConfigUpdateResponse(ConfigUpdateStatus.OK, "");
+        return new ConfigUpdateResponse(ConfigUpdateResponse.UpdateStatus.OK, "");
 
     }
 

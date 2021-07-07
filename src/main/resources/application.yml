@@ -3,3 +3,9 @@ server:
   forward-headers-strategy: FRAMEWORK
   error:
     includeStacktrace: never
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "configprops, env, health, metrics"
+
