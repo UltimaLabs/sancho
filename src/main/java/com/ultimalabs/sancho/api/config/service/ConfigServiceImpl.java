@@ -11,6 +11,7 @@ import com.ultimalabs.sancho.api.config.model.ConfigUpdateStatus;
 import com.ultimalabs.sancho.common.config.SanchoConfig;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
@@ -21,8 +22,16 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 public class ConfigServiceImpl implements ConfigService {
 
+    /**
+     * Sancho config
+     */
     @Autowired
     private SanchoConfig sanchoConfig;
+
+    /**
+     * Reference to a task scheduler
+     */
+    private final ThreadPoolTaskScheduler taskScheduler;
 
     /**
      * {@inheritDoc}
@@ -33,7 +42,7 @@ public class ConfigServiceImpl implements ConfigService {
         ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
 
         try {
-            mapper.writeValue(new File("sancho.yml.upd"), newSanchoConfig);
+            mapper.writeValue(new File("sancho.yml"), newSanchoConfig);
         } catch (IOException e) {
             log.error("There was an error saving application config: {}", e.getMessage());
             return new ConfigUpdateResponse(ConfigUpdateStatus.ERROR, e.getMessage());

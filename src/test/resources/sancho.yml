@@ -1,6 +1,6 @@
 # enable/disable automatic scheduling
 # disable scheduler for unit testing
-schedulerAutoStartDisabled: false
+schedulerAutoStartDisabled: true
 
 # how long do we wait in case of error
 # while scheduling next event, in seconds

@@ -25,7 +25,7 @@ public class ConfigController {
     private final ConfigService configService;
 
     /**
-     * Get current config
+     * Get the current config
      * @return current Sancho config
      */
     @GetMapping(value = "/", produces = "application/json")

@@ -6,18 +6,25 @@ import com.ultimalabs.sancho.predictclient.service.PredictClientService;
 import com.ultimalabs.sancho.rotctldclient.model.TrackingData;
 import com.ultimalabs.sancho.rotctldclient.service.RotctldClientService;
 import com.ultimalabs.sancho.rotctldclient.util.PassDataToTrackingDataConverter;
+import com.ultimalabs.sancho.scheduler.model.ScheduledTaskDetails;
 import com.ultimalabs.sancho.scheduler.runnables.FetcherTask;
 import com.ultimalabs.sancho.scheduler.runnables.ShellCmdTask;
 import com.ultimalabs.sancho.scheduler.runnables.TrackerTask;
 import com.ultimalabs.sancho.shellexec.service.ShellExecService;
+
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
+
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
+import java.util.concurrent.ScheduledFuture;
 
 /**
  * Fetches next pass data and schedules its tracking
@@ -53,10 +60,18 @@ public class SchedulerService {
     private final ThreadPoolTaskScheduler taskScheduler;
 
     /**
+     * List of scheduled tasks
+     */
+    @Getter
+    private List<ScheduledTaskDetails> taskList;
+
+    /**
      * Scheduling autostart
      */
     @PostConstruct
     public void autoStartScheduler() {
+
+        taskList = new ArrayList<>();
 
         if (config.isSchedulerAutoStartDisabled()) {
             return;
@@ -90,7 +105,7 @@ public class SchedulerService {
         }
 
         // schedule fetching of next pass
-        taskScheduler.schedule(new FetcherTask(this), nextFetch);
+        scheduleTask(new FetcherTask(this), nextFetch, "Next pass fetcher");
         log.info("Scheduled fetcher: {}", nextFetch);
 
     }
@@ -129,31 +144,64 @@ public class SchedulerService {
 
             // park the rotator in the starting position
             boolean parkOk = rotctldClientService.parkRotator(trackingData.getRiseAzimuthElevation());
-
-            if (parkOk) {
+            
+            // TODO replace with: if (parkOk)
+            if (true) {
                 // schedule tracker task
-                taskScheduler.schedule(new TrackerTask(rotctldClientService, trackingData), trackerDate);
+                scheduleTask(new TrackerTask(rotctldClientService, trackingData), trackerDate, "Tracking " + passData.getSatelliteData().getName() + " until " + fetcherDate);
                 log.info("Scheduled tracking: {}, {} - {}",
                         passData.getSatelliteData().getName(), trackerDate, passData.getSetPoint().getT());
             } else {
                 log.error("Tracking canceled due to parking error.");
                 return false;
             }
+        } else {
+            log.info("Tracking is not scheduled, rotatorEnabled = '{}', stepSize = '{}'", rotatorEnabled, stepSize);
         }
 
         // schedule rise-time shell cmd execution
         if (!riseShellCmdSubstituted.equals("")) {
-            taskScheduler.schedule(new ShellCmdTask(riseShellCmdSubstituted, shellExecService), trackerDate);
+            scheduleTask(new ShellCmdTask(riseShellCmdSubstituted, shellExecService), trackerDate, "Rise-time command execution: " + riseShellCmdSubstituted);
             log.info("Scheduled rise-time cmd exec: {} at {}", riseShellCmdSubstituted, trackerDate);
         }
 
         // schedule set-time shell cmd execution
         if (!setShellCmdSubstituted.equals("")) {
-            taskScheduler.schedule(new ShellCmdTask(setShellCmdSubstituted, shellExecService), fetcherDate);
+            scheduleTask(new ShellCmdTask(setShellCmdSubstituted, shellExecService), fetcherDate, "Set-time command execution: " + setShellCmdSubstituted);
             log.info("Scheduled set-time cmd exec: {} at {}", setShellCmdSubstituted, fetcherDate);
         }
 
         return true;
+
+    }
+
+    /**
+     * Schedule a task for execution and add it to a task list
+     * 
+     * @param task a task scheduled for execution
+     * @param startTime task start time
+     * @param description task description
+     */
+    private void scheduleTask(Runnable task, Date startTime, String description) {
+        ScheduledFuture<?> future = taskScheduler.schedule(task, startTime);
+        ScheduledTaskDetails taskDetails = new ScheduledTaskDetails(future, description, startTime);
+        taskList.add(taskDetails);
+    }
+
+    /**
+     * Get a list of currently scheduled tasks
+     * 
+     * @return a list of tasks
+     */
+    public List<String> getTasks() {
+        
+        List<String> listOfTasks = new ArrayList<>();
+
+        for (ScheduledTaskDetails taskDetails : taskList) {
+            listOfTasks.add(taskDetails.getStartTime().toString() + " - " + taskDetails.getDescription());
+        }
+
+        return listOfTasks;
 
     }
 
