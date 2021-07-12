@@ -1,5 +1,13 @@
 package com.ultimalabs.sancho.scheduler.service;
 
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
+import java.util.concurrent.ScheduledFuture;
+
+import javax.annotation.PostConstruct;
+
 import com.ultimalabs.sancho.common.config.SanchoConfig;
 import com.ultimalabs.sancho.common.model.SatellitePass;
 import com.ultimalabs.sancho.predictclient.service.PredictClientService;
@@ -9,24 +17,17 @@ import com.ultimalabs.sancho.rotctldclient.util.PassDataToTrackingDataConverter;
 import com.ultimalabs.sancho.scheduler.model.ScheduledTaskDetails;
 import com.ultimalabs.sancho.scheduler.runnables.FetcherTask;
 import com.ultimalabs.sancho.scheduler.runnables.ScheduledTasksCleanupTask;
-import com.ultimalabs.sancho.scheduler.runnables.SchedulerReloadTask;
 import com.ultimalabs.sancho.scheduler.runnables.ShellCmdTask;
+import com.ultimalabs.sancho.scheduler.runnables.ShutdownTask;
 import com.ultimalabs.sancho.scheduler.runnables.TrackerTask;
 import com.ultimalabs.sancho.shellexec.service.ShellExecService;
+
+import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
+import org.springframework.stereotype.Service;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
-import org.springframework.stereotype.Service;
-
-import javax.annotation.PostConstruct;
-
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-import java.util.concurrent.ScheduledFuture;
 
 /**
  * Tracking scheduler
@@ -180,10 +181,10 @@ public class SchedulerService {
     }
 
     /**
-     * Reload tracking scheduler - normally after the config update
+     * Shutdown - normally after the config update
      */
-    public void reloadScheduler() {
-        taskScheduler.execute(new SchedulerReloadTask(taskScheduler, this));
+    public void shutdown() {
+        taskScheduler.execute(new ShutdownTask(this));
     }
 
     /**

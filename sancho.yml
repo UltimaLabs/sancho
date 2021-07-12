@@ -15,27 +15,15 @@ radio:
   rigctldHost: "127.0.0.1"
   rigctldPort: 4532
 satelliteData:
-- id: "25338"
-  name: "NOAA15"
-  radioFrequency: 137.62
-  minElevation: 10.0
-  trackingElevationThreshold: 10.0
-  stepSize: 1.0
-  rotatorEnabled: true
-  radioControlEnabled: false
-  satRiseShellCmdTemplate: ""
-  satSetShellCmdTemplate: ""
-  satRiseShellCmdSubstituted: null
-  satSetShellCmdSubstituted: null
 - id: "28654"
   name: "NOAA18"
   radioFrequency: 137.9125
   minElevation: 10.0
   trackingElevationThreshold: 10.0
   stepSize: 1.0
-  rotatorEnabled: false
+  rotatorEnabled: true
   radioControlEnabled: false
-  satRiseShellCmdTemplate: ""
-  satSetShellCmdTemplate: ""
+  satRiseShellCmdTemplate: "echo 'NOAA18 begin' > /dev/null"
+  satSetShellCmdTemplate: "echo 'NOAA18 end' > /dev/null"
   satRiseShellCmdSubstituted: null
   satSetShellCmdSubstituted: null

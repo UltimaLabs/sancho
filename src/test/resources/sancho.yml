@@ -1,6 +1,6 @@
 # enable/disable automatic scheduling
 # disable scheduler for unit testing
-schedulerAutoStartDisabled: true
+schedulerAutoStartDisabled: false
 
 # how long do we wait in case of error
 # while scheduling next event, in seconds
@@ -43,9 +43,9 @@ satelliteData:
     name: "NOAA15"
     radioFrequency: 137.62
     minElevation: 20.0
-    trackingElevationThreshold: 35.0
+    trackingElevationThreshold: 20.0
     stepSize: 0.5
     rotatorEnabled: true
     radioControlEnabled: false
-    satRiseShellCmdTemplate: "echo 'begin' > /dev/null"
-    satSetShellCmdTemplate: "echo 'end' > /dev/null"
+    satRiseShellCmdTemplate: "echo 'NOAA 15 begin' > /dev/null"
+    satSetShellCmdTemplate: "echo 'NOAA 15 end' > /dev/null"

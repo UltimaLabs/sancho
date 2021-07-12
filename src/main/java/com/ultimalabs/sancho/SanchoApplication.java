@@ -11,7 +11,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @SpringBootApplication
 @ConfigurationPropertiesScan
 @EnableScheduling
-@PropertySource(value = "classpath:/sancho.yml", factory = YamlPropertySourceFactory.class)
+@PropertySource(value = "file:./sancho.yml", factory = YamlPropertySourceFactory.class)
 public class SanchoApplication {
 
     public static void main(String[] args) {

@@ -6,7 +6,6 @@ import java.io.IOException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.ultimalabs.sancho.api.config.model.ConfigUpdateResponse;
-
 import com.ultimalabs.sancho.common.config.SanchoConfig;
 import com.ultimalabs.sancho.scheduler.service.SchedulerService;
 
@@ -46,11 +45,9 @@ public class ConfigServiceImpl implements ConfigService {
             log.error("There was an error saving application config: {}", e.getMessage());
             return new ConfigUpdateResponse(ConfigUpdateResponse.UpdateStatus.ERROR, e.getMessage());
         }
-
-        this.sanchoConfig = newSanchoConfig;
-
-        // reload scheduler
-        schedulerService.reloadScheduler();
+        
+        // shutdown the app
+        schedulerService.shutdown();
 
         log.info("Config file updated via API");
         return new ConfigUpdateResponse(ConfigUpdateResponse.UpdateStatus.OK, "");

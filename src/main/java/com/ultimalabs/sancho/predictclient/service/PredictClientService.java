@@ -1,17 +1,23 @@
 package com.ultimalabs.sancho.predictclient.service;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import com.ultimalabs.sancho.common.config.SanchoConfig;
 import com.ultimalabs.sancho.common.config.SatelliteData;
 import com.ultimalabs.sancho.common.config.StationDetails;
 import com.ultimalabs.sancho.common.model.SatellitePass;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+
 import org.apache.commons.text.StringSubstitutor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.*;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * Fetches tracking data from the remote SatTrackAPI server
@@ -34,9 +40,10 @@ public class PredictClientService {
     public SatellitePass getNextPass() {
 
         List<SatellitePass> passDataList = new ArrayList<>();
-        RestTemplate restTemplate = new RestTemplate();
+        RestTemplate restTemplate = new RestTemplate();        
 
         for (SatelliteData sat : config.getSatelliteData()) {
+            log.info("Fetching next pass data for: {}", sat.getName());
             String url = queryUrlBuilder(config.getSatTrackApiUrl(), sat, config.getStation());
             SatellitePass pass;
             try {
