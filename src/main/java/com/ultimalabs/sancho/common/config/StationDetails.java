@@ -6,6 +6,9 @@ import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 /**
  * Station details
  */
@@ -40,4 +43,20 @@ public class StationDetails {
     @Max(value = Integer.MAX_VALUE, message = "Altitude value is too large")
     private final int altitude;
 
+    /**
+     * Constructor used for deserialization from JSON to StationDetails object
+     */
+    @JsonCreator(mode = JsonCreator.Mode.PROPERTIES)
+    public StationDetails(
+            @JsonProperty("name") String name, 
+            @JsonProperty("latitude") double latitude, 
+            @JsonProperty("longitude") double longitude,
+            @JsonProperty("altitude") int altitude
+        ) {
+
+        this.name = name;
+        this.latitude = latitude;
+        this.longitude = longitude;
+        this.altitude = altitude;
+    }
 }

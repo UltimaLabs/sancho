@@ -9,6 +9,10 @@ import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
+
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.util.List;
 
 /**
@@ -61,5 +65,28 @@ public class SanchoConfig {
     @NotNull(message = "Satellite details should not be null")
     @NotEmpty(message = "Satellite details should not be empty")
     private final List<SatelliteData> satelliteData;
+
+    /**
+     * Constructor used for deserialization from JSON to SanchoConfig object
+     */
+    @JsonCreator(mode = JsonCreator.Mode.PROPERTIES)
+    public SanchoConfig(
+            @JsonProperty("schedulerAutoStartDisabled") boolean schedulerAutoStartDisabled, 
+            @JsonProperty("schedulerErrorWait") int schedulerErrorWait, 
+            @JsonProperty("satTrackApiUrl") String satTrackApiUrl,
+            @JsonProperty("station") StationDetails station,
+            @JsonProperty("rotator") RotatorConfig rotator,
+            @JsonProperty("radio") RadioConfig radio,
+            @JsonProperty("satelliteData") List<SatelliteData> satelliteData
+        ) {
+
+        this.schedulerAutoStartDisabled = schedulerAutoStartDisabled;
+        this.schedulerErrorWait = schedulerErrorWait;
+        this.satTrackApiUrl = satTrackApiUrl;
+        this.station = station;
+        this.rotator = rotator;
+        this.radio = radio;
+        this.satelliteData = satelliteData;
+    }
 
 }

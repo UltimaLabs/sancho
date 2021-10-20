@@ -8,6 +8,9 @@ import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 /**
  * Rotator config
  */
@@ -38,4 +41,18 @@ public class RotatorConfig {
     @DecimalMin(value = "0.01", message = "Step size should not be less than 0.01")
     private final double stepSize;
 
+    /**
+     * Constructor used for deserialization from JSON to RotatorConfig object
+     */
+    @JsonCreator(mode = JsonCreator.Mode.PROPERTIES)
+    public RotatorConfig(
+            @JsonProperty("rotctldHost") String rotctldHost,
+            @JsonProperty("rotctldPort") int rotctldPort,
+            @JsonProperty("stepSize") double stepSize
+        ) {
+
+        this.rotctldHost = rotctldHost;
+        this.stepSize = stepSize;
+        this.rotctldPort = rotctldPort;
+    }
 }

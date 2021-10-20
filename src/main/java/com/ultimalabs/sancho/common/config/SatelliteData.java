@@ -7,6 +7,10 @@ import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
+
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import javax.validation.constraints.NotNull;
 
 /**
@@ -87,5 +91,33 @@ public class SatelliteData {
      * Substituted shell command executed at satellite set time
      */
     private String satSetShellCmdSubstituted;
+
+    /**
+     * Constructor used for deserialization from JSON to SatelliteData object
+     */
+    @JsonCreator(mode = JsonCreator.Mode.PROPERTIES)
+    public SatelliteData(
+            @JsonProperty("id") String id, 
+            @JsonProperty("name") String name, 
+            @JsonProperty("radioFrequency") double radioFrequency, 
+            @JsonProperty("minElevation") double minElevation, 
+            @JsonProperty("trackingElevationThreshold") double trackingElevationThreshold, 
+            @JsonProperty("stepSize") double stepSize, 
+            @JsonProperty("rotatorEnabled") boolean rotatorEnabled, 
+            @JsonProperty("radioControlEnabled") boolean radioControlEnabled, 
+            @JsonProperty("satRiseShellCmdTemplate") String satRiseShellCmdTemplate, 
+            @JsonProperty("satSetShellCmdTemplate") String satSetShellCmdTemplate
+        ) {
+        this.id = id;
+        this.name = name;
+        this.radioFrequency = radioFrequency;
+        this.minElevation = minElevation;
+        this.trackingElevationThreshold = trackingElevationThreshold;
+        this.stepSize = stepSize;
+        this.rotatorEnabled = rotatorEnabled;
+        this.radioControlEnabled = radioControlEnabled;
+        this.satRiseShellCmdTemplate = satRiseShellCmdTemplate;
+        this.satSetShellCmdTemplate = satSetShellCmdTemplate;
+    }
 
 }
