@@ -1,6 +1,6 @@
 ---
-schedulerAutoStartDisabled: false
-schedulerErrorWait: 150
+schedulerAutoStartDisabled: true
+schedulerErrorWait: 180
 satTrackApiUrl: "https://sattrackapi.ultima.hr:8443/api/v1"
 station:
   name: "Test station"
@@ -15,15 +15,27 @@ radio:
   rigctldHost: "127.0.0.1"
   rigctldPort: 4532
 satelliteData:
+- id: "25338"
+  name: "NOAA15"
+  radioFrequency: 137.62
+  minElevation: 10.0
+  trackingElevationThreshold: 10.0
+  stepSize: 1.0
+  rotatorEnabled: false
+  radioControlEnabled: false
+  satRiseShellCmdTemplate: ""
+  satSetShellCmdTemplate: ""
+  satRiseShellCmdSubstituted: null
+  satSetShellCmdSubstituted: null
 - id: "28654"
   name: "NOAA18"
   radioFrequency: 137.9125
   minElevation: 10.0
   trackingElevationThreshold: 10.0
   stepSize: 1.0
-  rotatorEnabled: true
+  rotatorEnabled: false
   radioControlEnabled: false
-  satRiseShellCmdTemplate: "echo 'NOAA18 begin' > /dev/null"
-  satSetShellCmdTemplate: "echo 'NOAA18 end' > /dev/null"
+  satRiseShellCmdTemplate: ""
+  satSetShellCmdTemplate: ""
   satRiseShellCmdSubstituted: null
   satSetShellCmdSubstituted: null

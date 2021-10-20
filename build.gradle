@@ -1,5 +1,5 @@
 plugins {
-	id 'org.springframework.boot' version '2.5.1'
+	id 'org.springframework.boot' version '2.5.5'
 	id 'io.spring.dependency-management' version '1.0.11.RELEASE'
 	id 'fr.brouillard.oss.gradle.jgitver' version '0.9.1'
 	id 'java'
@@ -29,8 +29,12 @@ task cleanDeployDir(type: Delete) {
 }
 
 task buildDeployJar(type: Copy) {
-	from jar
+	from bootJar
 	into "provisioning/roles/deploy-app/files"
+}
+
+jar {
+	enabled = false
 }
 
 dependencies {

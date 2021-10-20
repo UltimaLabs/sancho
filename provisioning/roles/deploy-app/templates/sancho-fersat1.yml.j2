@@ -1,0 +1,49 @@
+# enable/disable automatic scheduling
+# disable scheduler for unit testing
+schedulerAutoStartDisabled: false
+
+# how long do we wait in case of error
+# while scheduling next event
+schedulerErrorWait: 180 # seconds
+
+# SatTrackAPI base URL
+satTrackApiUrl: https://sattrackapi.ultima.hr:8443/api/v1
+
+# station details
+station:
+  name: "Zagreb/FER"
+  latitude: 45.8015
+  longitude: 15.9714
+  altitude: 175
+
+rotator:
+  rotctldHost: 127.0.0.1
+  rotctldPort: 4533
+  stepSize: 0.25 # seconds
+
+radio:
+  rigctldHost: 127.0.0.1
+  rigctldPort: 4532
+
+# satellites we're tracking
+
+# You can use the following placeholders in shell cmd templates:
+# ${tle} - string (multiline)
+# ${satId} - string
+# ${satName} - string
+# ${radioFrequency} - double [MHz]
+# ${predictTime} - Unix epoch
+# ${rise} - Unix epoch
+# ${set} - Unix epoch
+# ${duration} - double [sec]
+satelliteData:
+- id: 98067A
+  name: "ISS"
+  radioFrequency: 137.1
+  minElevation: 15.0
+  trackingElevationThreshold: 20.0
+  stepSize: 1
+  rotatorEnabled: true
+  radioControlEnabled: false
+  satRiseShellCmdTemplate: ""
+  satSetShellCmdTemplate: ""

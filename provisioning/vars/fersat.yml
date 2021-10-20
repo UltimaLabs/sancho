@@ -7,6 +7,7 @@ num_old_jars_to_keep: 5
 
 app_current_jar_symlink: sancho-current.jar
 app_properties_src: application-fersat1.yml.j2
+sancho_properties_src: sancho-fersat1.yml.j2
 
 systemd_unit_description: "Sancho - satellite tracking client"
 systemd_unit_after: network.target

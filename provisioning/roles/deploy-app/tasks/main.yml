@@ -35,6 +35,15 @@
   notify:
     - Restart sancho service
 
+- name: Copy sancho.yml file
+  template:
+    src: "{{ sancho_properties_src }}"
+    dest: "{{ app_basedir }}/sancho.yml"
+    owner: "{{ app_files_owner }}"
+    group: "{{ app_files_group }}"
+  notify:
+    - Restart sancho service
+
 - name: Copy the systemd service unit
   template:
     src: sancho.service.j2
@@ -46,4 +55,7 @@
     - Restart sancho service
 
 - name: sancho service must be started and enabled on boot
-  service: name=sancho state=started enabled=yes
+  service:
+    name: sancho
+    state: started
+    enabled: yes
