@@ -1,18 +1,20 @@
 package com.ultimalabs.sancho.rotctldclient.service;
 
-import com.ultimalabs.sancho.common.config.SanchoConfig;
-import com.ultimalabs.sancho.rotctldclient.model.AzimuthElevation;
-import com.ultimalabs.sancho.rotctldclient.model.TrackingData;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.time.Instant;
+
+import com.ultimalabs.sancho.common.config.SanchoConfig;
+import com.ultimalabs.sancho.rotctldclient.model.AzimuthElevation;
+import com.ultimalabs.sancho.rotctldclient.model.TrackingData;
+
+import org.springframework.stereotype.Service;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * Client service for rotctld
@@ -89,6 +91,7 @@ public class RotctldClientService {
                 Thread.sleep(sleepDuration);
             } catch (InterruptedException e) {
                 log.error("Interrupted exception: {}", e.getMessage());
+                Thread.currentThread().interrupt();
             }
 
             oldAzEl = newAzEl;
