@@ -18,14 +18,14 @@ station:
 
 # rotctld backend configuration
 rotator:
-  rotctldHost: 127.0.0.1
-  rotctldPort: 14533
+  rotctldHost: 10.8.19.1
+  rotctldPort: 4533
   stepSize: 0.25 # how often do we update the rotator position, in seconds; 0.25 is a sensible default
 
 # rigctld backend configuration
 radio:
-  rigctldHost: 127.0.0.1
-  rigctldPort: 14532
+  rigctldHost: 10.8.19.1
+  rigctldPort: 4532
 
 # satellites we're tracking
 
@@ -33,7 +33,7 @@ radio:
 # ${tle} - string (note that newline is passed as literal '\n')
 # ${satId} - string
 # ${satName} - string
-# ${radioFrequency} - double [MHz]
+# ${radioFrequency} - double [Hz]
 # ${predictTime} - Unix epoch
 # ${rise} - Unix epoch
 # ${set} - Unix epoch
@@ -41,7 +41,7 @@ radio:
 satelliteData:
   - id: 25338
     name: "NOAA15"
-    radioFrequency: 137.62
+    radioFrequency: 137620000
     minElevation: 20.0
     trackingElevationThreshold: 20.0
     stepSize: 0.5

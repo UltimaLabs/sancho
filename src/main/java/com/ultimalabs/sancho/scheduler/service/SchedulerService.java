@@ -12,7 +12,7 @@ import com.ultimalabs.sancho.common.config.SanchoConfig;
 import com.ultimalabs.sancho.common.model.SatellitePass;
 import com.ultimalabs.sancho.predictclient.service.PredictClientService;
 import com.ultimalabs.sancho.rotctldclient.model.TrackingData;
-import com.ultimalabs.sancho.rotctldclient.service.RotctldClientService;
+import com.ultimalabs.sancho.rotctldclient.service.HamlibClientService;
 import com.ultimalabs.sancho.rotctldclient.util.PassDataToTrackingDataConverter;
 import com.ultimalabs.sancho.scheduler.model.ScheduledTaskDetails;
 import com.ultimalabs.sancho.scheduler.runnables.FetcherTask;
@@ -55,7 +55,7 @@ public class SchedulerService {
     /**
      * Rotctld client service
      */
-    private final RotctldClientService rotctldClientService;
+    private final HamlibClientService hamlibClientService;
 
     /**
      * Reference to the task scheduler
@@ -148,11 +148,11 @@ public class SchedulerService {
             TrackingData trackingData = PassDataToTrackingDataConverter.convert(passData);
 
             // park the rotator in the starting position
-            boolean parkOk = rotctldClientService.parkRotator(trackingData.getRiseAzimuthElevation());
+            boolean parkOk = hamlibClientService.parkRotator(trackingData.getRiseAzimuthElevation());
 
             if (parkOk) {
                 // schedule tracker task
-                scheduleTask(new TrackerTask(rotctldClientService, trackingData), trackerDate,
+                scheduleTask(new TrackerTask(hamlibClientService, trackingData), trackerDate,
                         "Tracking " + passData.getSatelliteData().getName() + " until " + fetcherDate);
                 log.info("Scheduled tracking: {}, {} - {}", passData.getSatelliteData().getName(), trackerDate,
                         passData.getSetPoint().getT());

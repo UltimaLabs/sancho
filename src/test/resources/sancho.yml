@@ -33,7 +33,7 @@ radio:
 # ${tle} - string (note that newline is passed as literal '\n')
 # ${satId} - string
 # ${satName} - string
-# ${radioFrequency} - double [MHz]
+# ${radioFrequency} - double [Hz]
 # ${predictTime} - Unix epoch
 # ${rise} - Unix epoch
 # ${set} - Unix epoch
@@ -41,7 +41,7 @@ radio:
 satelliteData:
   - id: 25338
     name: "NOAA15"
-    radioFrequency: 137.62
+    radioFrequency: 137620000
     minElevation: 20.0
     trackingElevationThreshold: 20.0
     stepSize: 0.5

@@ -1,20 +1,22 @@
 package com.ultimalabs.sancho.api.status.service;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import com.ultimalabs.sancho.rotctldclient.model.AzimuthElevation;
+import com.ultimalabs.sancho.rotctldclient.model.RadioParams;
+import com.ultimalabs.sancho.rotctldclient.service.HamlibClientService;
 import com.ultimalabs.sancho.scheduler.model.ScheduledTaskDetails;
 import com.ultimalabs.sancho.scheduler.service.SchedulerService;
-
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import lombok.RequiredArgsConstructor;
+import java.util.ArrayList;
+import java.util.List;
 
 @RequiredArgsConstructor
 @Service
 public class StatusServiceImpl implements StatusService {
 
     private final SchedulerService schedulerService;
+    private final HamlibClientService hamlibClientService;
 
     /**
      * {@inheritDoc}
@@ -29,5 +31,23 @@ public class StatusServiceImpl implements StatusService {
 
         return listOfTasks;
 
+    }
+
+    /**
+     * {@inheritDoc}
+     * @return
+     */
+    @Override
+    public AzimuthElevation getRotatorPosition() {
+        return hamlibClientService.getAzEl();
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public RadioParams getRadioParams() {
+        return hamlibClientService.getRadioParams();
     }
 }
