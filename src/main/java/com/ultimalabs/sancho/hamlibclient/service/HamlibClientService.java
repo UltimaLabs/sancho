@@ -150,7 +150,6 @@ public class HamlibClientService {
 
         startConnection();
         String returnMessage = sendMessage(",\\get_pos", SendWhere.ROTCTL);
-        log.info("Got this back: {}", returnMessage);
         stopConnection();
 
         if (isInvalidResponse(returnMessage)) {
@@ -174,7 +173,6 @@ public class HamlibClientService {
 
         startConnection();
         String returnMessage = sendMessage(",\\get_freq", SendWhere.RIGCTL);
-        log.info("Got this back: {}", returnMessage);
         stopConnection();
 
         if (returnMessage == null) {
