@@ -1,7 +1,7 @@
-package com.ultimalabs.sancho.rotctldclient.model;
+package com.ultimalabs.sancho.hamlibclient.model;
 
-import com.ultimalabs.sancho.rotctldclient.util.AzimuthElevationUtil;
-import lombok.Data;
+import com.ultimalabs.sancho.hamlibclient.util.AzimuthElevationUtil;
+import lombok.*;
 
 /**
  * Stores azimuth/elevation data pairs
@@ -9,7 +9,9 @@ import lombok.Data;
  * The angles are normalized in 0 to 360 range,
  * with 360 not included.
  */
-@Data
+@Getter
+@ToString
+@EqualsAndHashCode
 public class AzimuthElevation {
 
     /**

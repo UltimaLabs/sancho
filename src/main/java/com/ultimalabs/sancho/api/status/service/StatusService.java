@@ -1,7 +1,7 @@
 package com.ultimalabs.sancho.api.status.service;
 
-import com.ultimalabs.sancho.rotctldclient.model.AzimuthElevation;
-import com.ultimalabs.sancho.rotctldclient.model.RadioParams;
+import com.ultimalabs.sancho.hamlibclient.model.AzimuthElevation;
+import com.ultimalabs.sancho.hamlibclient.model.RadioParams;
 
 import java.util.List;
 

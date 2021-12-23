@@ -1,4 +1,4 @@
-package com.ultimalabs.sancho.rotctldclient.util;
+package com.ultimalabs.sancho.hamlibclient.util;
 
 /**
  * Azimuth/elevation utility class

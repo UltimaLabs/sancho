@@ -37,13 +37,13 @@ radio:
 # ${set} - Unix epoch
 # ${duration} - double [sec]
 satelliteData:
-- id: 98067A
-  name: "ISS"
-  radioFrequency: 137100000
-  minElevation: 15.0
-  trackingElevationThreshold: 20.0
-  stepSize: 1
-  rotatorEnabled: true
-  radioControlEnabled: false
-  satRiseShellCmdTemplate: ""
-  satSetShellCmdTemplate: ""
+  - id: 25338
+    name: "NOAA15"
+    radioFrequency: 137620000
+    minElevation: 20.0
+    trackingElevationThreshold: 20.0
+    stepSize: 0.5
+    rotatorEnabled: true
+    radioControlEnabled: false
+    satRiseShellCmdTemplate: "echo 'NOAA 15 begin' > /dev/null"
+    satSetShellCmdTemplate: "echo 'NOAA 15 end' > /dev/null"

@@ -1,9 +1,11 @@
-package com.ultimalabs.sancho.rotctldclient.service;
+package com.ultimalabs.sancho.hamlibclient.service;
 
 import com.ultimalabs.sancho.common.config.SanchoConfig;
-import com.ultimalabs.sancho.rotctldclient.model.AzimuthElevation;
-import com.ultimalabs.sancho.rotctldclient.model.RadioParams;
-import com.ultimalabs.sancho.rotctldclient.model.TrackingData;
+import com.ultimalabs.sancho.common.config.SatelliteData;
+import com.ultimalabs.sancho.hamlibclient.model.AzimuthElevation;
+import com.ultimalabs.sancho.hamlibclient.model.AzimuthElevationDoppler;
+import com.ultimalabs.sancho.hamlibclient.model.RadioParams;
+import com.ultimalabs.sancho.hamlibclient.model.TrackingData;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -59,9 +61,10 @@ public class HamlibClientService {
      * Sends a sequence of "set position" commands to the rotctld, with a
      * short pause (sleepDuration) between them.
      *
-     * @param trackingData tracking data
+     * @param trackingData  tracking data
+     * @param satelliteData satellite data
      */
-    public void track(TrackingData trackingData) {
+    public void track(TrackingData trackingData, SatelliteData satelliteData) {
 
         int sleepDuration = (int) (config.getRotator().getStepSize() * 1000);
 
@@ -70,23 +73,21 @@ public class HamlibClientService {
         log.info("Started tracking {}.", trackingData.getSatName());
 
         AzimuthElevation oldAzEl = trackingData.getRiseAzimuthElevation();
+        AzimuthElevationDoppler oldAzElDop = new AzimuthElevationDoppler(oldAzEl.getAzimuth(), oldAzEl.getElevation(), satelliteData.getRadioFrequency());
 
         while ((Instant.now().toEpochMilli() / 1000) < trackingData.getTrackingEnd()) {
 
-            AzimuthElevation newAzEl = trackingData.getCurrentAzimuthElevation();
+            AzimuthElevationDoppler newAzElDop = trackingData.getCurrentAzimuthElevationDoppler();
 
-            if (newAzEl == null || newAzEl.equals(oldAzEl)) {
-                if (newAzEl == null) {
+            if (newAzElDop == null || newAzElDop.equals(oldAzElDop)) {
+                if (newAzElDop == null) {
                     log.info("Az/el not found for current timestamp.");
                 }
                 continue;
             }
 
-            String returnMessage = sendMessage(",\\set_pos " + newAzEl.getAzimuth() + " " + newAzEl.getElevation(), SendWhere.ROTCTL);
-
-            if (isInvalidResponse(returnMessage)) {
-                log.error("Rotctld failed executing setAzEl() command. Response: {}", returnMessage);
-            }
+            setAzimuthElevation(newAzElDop);
+            setRadioFrequency(satelliteData, newAzElDop);
 
             try {
                 Thread.sleep(sleepDuration);
@@ -95,7 +96,7 @@ public class HamlibClientService {
                 Thread.currentThread().interrupt();
             }
 
-            oldAzEl = newAzEl;
+            oldAzElDop = newAzElDop;
 
         }
 
@@ -103,6 +104,41 @@ public class HamlibClientService {
 
         stopConnection();
 
+    }
+
+    /**
+     * Set azimuth/elevation via rotctld
+     *
+     * @param newAzElDop new azimuth, elevation, doppler shift (not used here)
+     */
+    private void setAzimuthElevation(AzimuthElevationDoppler newAzElDop) {
+
+        String returnMessageRotCtld = sendMessage(",\\set_pos " + newAzElDop.getAzimuth() + " " + newAzElDop.getElevation(), SendWhere.ROTCTL);
+
+        if (isInvalidResponse(returnMessageRotCtld)) {
+            log.error("Rotctld failed executing set_pos command. Response: {}", returnMessageRotCtld);
+        }
+
+    }
+
+    /**
+     * Set Doppler-adjusted radio frequency
+     *
+     * @param satelliteData satellite params, for the base frequency
+     * @param newAzElDop    azimuth, elevation, doppler shift
+     */
+    private void setRadioFrequency(SatelliteData satelliteData, AzimuthElevationDoppler newAzElDop) {
+
+        if (clientSocketRigctl == null) {
+            return;
+        }
+
+        int satelliteDopplerAdjustedRadioFrequency = (int) Math.round(satelliteData.getRadioFrequency()) + (int) Math.round(newAzElDop.getDopplerShift());
+        String returnMessageRigCtld = sendMessage(",\\set_freq " + satelliteDopplerAdjustedRadioFrequency, SendWhere.RIGCTL);
+
+        if (isInvalidResponse(returnMessageRigCtld)) {
+            log.error("Rigctld failed executing set_freq command. Response: {}", returnMessageRigCtld);
+        }
     }
 
     /**
@@ -148,7 +184,7 @@ public class HamlibClientService {
         String[] parts = returnMessage.split(",");
 
         if (isInvalidResponse(returnMessage)) {
-            log.error("Rigctld failed executing getRadioFrequency() command. Response: {}", returnMessage);
+            log.error("Rigctld failed executing getRadioParams() command. Response: {}", returnMessage);
             return null;
         }
 
@@ -175,6 +211,7 @@ public class HamlibClientService {
      * Open a connection to rigctld/rotctld
      */
     private void startConnection() {
+
         try {
 
             if (!config.getRotator().getRotctldHost().equals("")) {
@@ -193,6 +230,7 @@ public class HamlibClientService {
             log.error("Error connecting to host: {}", e.getMessage());
             return;
         }
+
         try {
 
             if (clientSocketRotctl != null) {
@@ -211,6 +249,7 @@ public class HamlibClientService {
             log.error("Error getting output stream for host: {}", e.getMessage());
             return;
         }
+
         try {
 
             if (clientSocketRotctl != null) {

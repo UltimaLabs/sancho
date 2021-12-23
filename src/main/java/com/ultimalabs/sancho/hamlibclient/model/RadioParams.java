@@ -1,4 +1,4 @@
-package com.ultimalabs.sancho.rotctldclient.model;
+package com.ultimalabs.sancho.hamlibclient.model;
 
 import lombok.Data;
 

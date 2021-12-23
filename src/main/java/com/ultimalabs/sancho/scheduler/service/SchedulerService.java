@@ -11,9 +11,9 @@ import javax.annotation.PostConstruct;
 import com.ultimalabs.sancho.common.config.SanchoConfig;
 import com.ultimalabs.sancho.common.model.SatellitePass;
 import com.ultimalabs.sancho.predictclient.service.PredictClientService;
-import com.ultimalabs.sancho.rotctldclient.model.TrackingData;
-import com.ultimalabs.sancho.rotctldclient.service.HamlibClientService;
-import com.ultimalabs.sancho.rotctldclient.util.PassDataToTrackingDataConverter;
+import com.ultimalabs.sancho.hamlibclient.model.TrackingData;
+import com.ultimalabs.sancho.hamlibclient.service.HamlibClientService;
+import com.ultimalabs.sancho.hamlibclient.util.PassDataToTrackingDataConverter;
 import com.ultimalabs.sancho.scheduler.model.ScheduledTaskDetails;
 import com.ultimalabs.sancho.scheduler.runnables.FetcherTask;
 import com.ultimalabs.sancho.scheduler.runnables.ScheduledTasksCleanupTask;
@@ -152,7 +152,7 @@ public class SchedulerService {
 
             if (parkOk) {
                 // schedule tracker task
-                scheduleTask(new TrackerTask(hamlibClientService, trackingData), trackerDate,
+                scheduleTask(new TrackerTask(hamlibClientService, trackingData, passData.getSatelliteData()), trackerDate,
                         "Tracking " + passData.getSatelliteData().getName() + " until " + fetcherDate);
                 log.info("Scheduled tracking: {}, {} - {}", passData.getSatelliteData().getName(), trackerDate,
                         passData.getSetPoint().getT());

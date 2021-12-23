@@ -1,4 +1,4 @@
-package com.ultimalabs.sancho.rotctldclient.model;
+package com.ultimalabs.sancho.hamlibclient.model;
 
 import lombok.Data;
 
@@ -42,19 +42,19 @@ public class TrackingData {
     private final int maxElevation;
 
     /**
-     * Map of maximum/elevation entries
+     * Map of maximum/elevation/doppler shift entries
      */
-    private final Map<Long, AzimuthElevation> azimuthElevationMap;
+    private final Map<Long, AzimuthElevationDoppler> azimuthElevationDopplerMap;
 
     /**
-     * Returns azimuth/elevation at the current timestamp
+     * Returns azimuth/elevation/doppler at the current timestamp
      * <p>
      * Timestamp is calculated as Unix epoch in seconds.
      *
      * @return azimuth/elevation
      */
-    public AzimuthElevation getCurrentAzimuthElevation() {
-        return getAzimuthElevation(Instant.now().toEpochMilli() / 1000);
+    public AzimuthElevationDoppler getCurrentAzimuthElevationDoppler() {
+        return getAzimuthElevationDoppler(Instant.now().toEpochMilli() / 1000);
     }
 
     /**
@@ -63,8 +63,8 @@ public class TrackingData {
      * @param timeStamp timestamp, in seconds
      * @return azimuth/elevation or null if no data exists for the given timestamp
      */
-    public AzimuthElevation getAzimuthElevation(long timeStamp) {
-        return azimuthElevationMap.get(timeStamp);
+    public AzimuthElevationDoppler getAzimuthElevationDoppler(long timeStamp) {
+        return azimuthElevationDopplerMap.get(timeStamp);
     }
 
 }

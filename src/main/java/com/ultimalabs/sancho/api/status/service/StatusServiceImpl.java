@@ -1,8 +1,8 @@
 package com.ultimalabs.sancho.api.status.service;
 
-import com.ultimalabs.sancho.rotctldclient.model.AzimuthElevation;
-import com.ultimalabs.sancho.rotctldclient.model.RadioParams;
-import com.ultimalabs.sancho.rotctldclient.service.HamlibClientService;
+import com.ultimalabs.sancho.hamlibclient.model.AzimuthElevation;
+import com.ultimalabs.sancho.hamlibclient.model.RadioParams;
+import com.ultimalabs.sancho.hamlibclient.service.HamlibClientService;
 import com.ultimalabs.sancho.scheduler.model.ScheduledTaskDetails;
 import com.ultimalabs.sancho.scheduler.service.SchedulerService;
 import lombok.RequiredArgsConstructor;

@@ -33,7 +33,7 @@ public class SatelliteData {
     private final String name;
 
     /**
-     * Satellite transponder's radio frequency
+     * Satellite transponder's radio frequency in Hz
      */
     private final double radioFrequency;
 

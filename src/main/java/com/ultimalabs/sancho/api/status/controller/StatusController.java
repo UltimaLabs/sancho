@@ -1,8 +1,8 @@
 package com.ultimalabs.sancho.api.status.controller;
 
 import com.ultimalabs.sancho.api.status.service.StatusService;
-import com.ultimalabs.sancho.rotctldclient.model.AzimuthElevation;
-import com.ultimalabs.sancho.rotctldclient.model.RadioParams;
+import com.ultimalabs.sancho.hamlibclient.model.AzimuthElevation;
+import com.ultimalabs.sancho.hamlibclient.model.RadioParams;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;

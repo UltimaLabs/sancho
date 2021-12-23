@@ -1,9 +1,10 @@
-package com.ultimalabs.sancho.rotctldclient.util;
+package com.ultimalabs.sancho.hamlibclient.util;
 
 import com.ultimalabs.sancho.common.model.PassEventDataPoint;
 import com.ultimalabs.sancho.common.model.SatellitePass;
-import com.ultimalabs.sancho.rotctldclient.model.AzimuthElevation;
-import com.ultimalabs.sancho.rotctldclient.model.TrackingData;
+import com.ultimalabs.sancho.hamlibclient.model.AzimuthElevation;
+import com.ultimalabs.sancho.hamlibclient.model.AzimuthElevationDoppler;
+import com.ultimalabs.sancho.hamlibclient.model.TrackingData;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.HashMap;
@@ -37,15 +38,15 @@ public class PassDataToTrackingDataConverter {
         String satName = passData.getSatelliteData().getName();
         long trackingStart = passData.getRisePoint().getT().getTime() / 1000;
         long trackingEnd = passData.getSetPoint().getT().getTime() / 1000;
-        Map<Long, AzimuthElevation> azElEntriesHashMap = new HashMap<>();
+        Map<Long, AzimuthElevationDoppler> azElDopEntriesHashMap = new HashMap<>();
         boolean isFlipped = shouldFlip(passEventDetailsEntries);
 
         for (PassEventDataPoint entry : passEventDetailsEntries) {
 
             long timeStamp = entry.getT().getTime() / 1000;
-            AzimuthElevation azEl = flipConversion(entry, isFlipped);
+            AzimuthElevationDoppler azEl = flipConversion(entry, isFlipped);
 
-            azElEntriesHashMap.put(timeStamp, azEl);
+            azElDopEntriesHashMap.put(timeStamp, azEl);
 
         }
 
@@ -58,7 +59,7 @@ public class PassDataToTrackingDataConverter {
                 riseAzEl,
                 setAzEl,
                 AzimuthElevationUtil.normalizeAngle(passData.getMidPoint().getEl()),
-                azElEntriesHashMap
+                azElDopEntriesHashMap
         );
 
     }
@@ -114,13 +115,13 @@ public class PassDataToTrackingDataConverter {
      * @param flip      should we perform the flip
      * @return azimuth/elevation object converted from pass event data point
      */
-    private static AzimuthElevation flipConversion(PassEventDataPoint dataPoint, boolean flip) {
+    private static AzimuthElevationDoppler flipConversion(PassEventDataPoint dataPoint, boolean flip) {
 
         if (flip) {
-            return new AzimuthElevation(dataPoint.getAz() + 180, 180 - dataPoint.getEl());
+            return new AzimuthElevationDoppler(dataPoint.getAz() + 180, 180 - dataPoint.getEl(), dataPoint.getDop());
         }
 
-        return new AzimuthElevation(dataPoint.getAz(), dataPoint.getEl());
+        return new AzimuthElevationDoppler(dataPoint.getAz(), dataPoint.getEl(), dataPoint.getDop());
 
     }
 
